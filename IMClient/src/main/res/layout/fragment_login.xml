@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    tools:context="com.jersuen.im.ui.fragment.LoginFragment">
+
+
+    <EditText
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fragment_login_input_account"
+            android:hint="@string/fragment_login_input_account"
+            android:layout_gravity="center_horizontal"/>
+    <EditText
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/fragment_login_input_password"
+            android:id="@+id/fragment_login_input_password"
+            android:layout_gravity="center_horizontal"/>
+    <Button
+
+            android:layout_marginTop="20dp"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_login_btn_login"
+            android:id="@+id/fragment_login_btn_login"
+            android:layout_gravity="center_horizontal"/>
+</LinearLayout>

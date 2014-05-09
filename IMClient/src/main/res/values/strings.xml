@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IMClient</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_account">AccountActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+
+    <!-- fragment_login.xml -->
+
+    <string name="fragment_login_input_account">输入账户</string>
+    <string name="fragment_login_input_password">输入密码</string>
+    <string name="fragment_login_btn_login">登陆</string>
+</resources>

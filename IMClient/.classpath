@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Android API 19 Platform"/>
+	<classpathentry kind="src" path="/IMClient/build/source/r/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/aidl/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/buildConfig/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/rs/debug"/>
+	<classpathentry kind="src" path="/IMProject/IMClient/build/res/rs/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/r/test/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/aidl/test/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/buildConfig/test/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/source/rs/test/debug"/>
+	<classpathentry kind="src" path="/IMClient/build/res/rs/test/debug"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/res"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/resources"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/aidl"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/assets"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/java"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/jni"/>
+	<classpathentry kind="src" path="/IMClient/src/debug/rs"/>
+	<classpathentry kind="src" path="/IMClient/src/main/res"/>
+	<classpathentry kind="src" path="/IMClient/src/main/resources"/>
+	<classpathentry kind="src" path="/IMClient/src/main/aidl"/>
+	<classpathentry kind="src" path="/IMClient/src/main/assets"/>
+	<classpathentry kind="src" path="/IMClient/src/main/java"/>
+	<classpathentry kind="src" path="/IMClient/src/main/jni"/>
+	<classpathentry kind="src" path="/IMClient/src/main/rs"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/res"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/resources"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/aidl"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/assets"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/java"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/jni"/>
+	<classpathentry kind="src" path="/IMClient/src/androidTest/rs"/>
+	<classpathentry kind="src" path="/IMClient/src/main/asmack"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/support-v4-19.1.0"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

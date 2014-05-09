@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="Android API 19 Platform" jdk_type="Android SDK">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/build/source/r/test/debug"/>
+		<testFolder url="file://$MODULE_DIR$/build/source/aidl/test/debug"/>
+		<testFolder url="file://$MODULE_DIR$/build/source/buildConfig/test/debug"/>
+		<testFolder url="file://$MODULE_DIR$/build/source/rs/test/debug"/>
+		<testFolder url="file://$MODULE_DIR$/build/res/rs/test/debug"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/res"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/resources"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/aidl"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/assets"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/java"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/jni"/>
+		<testFolder url="file://$MODULE_DIR$/src/androidTest/rs"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/apk"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/assets"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/bundles"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/classes"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/dependency-cache"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/incremental"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/libs"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/manifests"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/res"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/symbols"/>
+		<excludeFolder url="file://$MODULE_DIR$/build/tmp"/>
+	</contentEntry>
+	<levels>
+		<level name="support-v4-19.1.0" value="project"/>
+	</levels>
+</component>
