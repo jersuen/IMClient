@@ -13,4 +13,9 @@
     <string name="fragment_login_input_account">输入账户</string>
     <string name="fragment_login_input_password">输入密码</string>
     <string name="fragment_login_btn_login">登陆</string>
+
+
+    <!-- activity_main.xml -->
+    <string name="activity_main_btn_session">回话</string>
+    <string name="activity_main_btn_contact">联系人</string>
 </resources>

@@ -1,16 +1,50 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.jersuen.im.MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:orientation="vertical"
+              tools:context="com.jersuen.im.MainActivity">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            >
+        <RadioButton
+                android:id="@+id/activity_main_btn_session"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="回话"
+                android:gravity="center"
+                android:button="@null"
+                />]
+        <RadioButton
+                android:id="@+id/activity_main_btn_contact"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="联系人"
+                android:gravity="center"
+                android:button="@null"
+                />
+    </RadioGroup>
 
-</RelativeLayout>
+    <com.jersuen.im.ui.view.PageIndicator
+            android:id="@+id/activity_main_pager_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            app:fades="false"
+            />
+
+    <android.support.v4.view.ViewPager
+            android:id="@+id/activity_main_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+</LinearLayout>

@@ -1,6 +1,7 @@
 package com.jersuen.im.ui.fragment;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.jersuen.im.IM;
+import com.jersuen.im.MainActivity;
 import com.jersuen.im.R;
 import org.jivesoftware.smack.*;
 
@@ -52,6 +54,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     protected Boolean doInBackground(String... strings) {
                         ConnectionConfiguration config = new ConnectionConfiguration(IM.HOST, IM.PORT);
                         config.setDebuggerEnabled(true);
+                        // 关闭安全模式
                         config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
                         XMPPConnection connection = new XMPPTCPConnection(config);
                         try {
@@ -65,15 +68,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         } catch (IOException e) {
                             e.printStackTrace();
                         } finally {
-                            //connection.disconnect();
+                            connection.disconnect();
                         }
                         return true;
                     }
 
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
-                            // 账户验证成功
-                            Toast.makeText(getActivity(), (aBoolean) ? ("登陆成功") : ("登陆失败"), Toast.LENGTH_LONG).show();
+                            // 1. 保存账户信息
+                            // 2. 跳转
+                            startActivity(new Intent(getActivity(), MainActivity.class));
+                            getActivity().finish();
                         }
                     }
                 }.execute(inAccount.getText().toString(), inPassword.getText().toString());
