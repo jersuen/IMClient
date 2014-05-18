@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.jersuen.im.IM;
+import com.jersuen.im.IMService;
 import com.jersuen.im.MainActivity;
 import com.jersuen.im.R;
 import org.jivesoftware.smack.*;
@@ -75,7 +76,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
-                            // 1. 保存账户信息
+                            // 1. 保存账户信息,并启动XMPP后台
+                            IM.putString(IM.ACCOUNT_USERNAME, inAccount.getText().toString());
+                            IM.putString(IM.ACCOUNT_PASSWORD, inPassword.getText().toString());
+                            getActivity().startService(new Intent(getActivity(), IMService.class));
+
                             // 2. 跳转
                             startActivity(new Intent(getActivity(), MainActivity.class));
                             getActivity().finish();

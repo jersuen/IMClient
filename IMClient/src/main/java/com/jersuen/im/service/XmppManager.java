@@ -1,36 +1,34 @@
 package com.jersuen.im.service;
 
 import android.os.RemoteException;
-import com.jersuen.im.service.aidl.IXmppConnection;
+import com.jersuen.im.service.aidl.IXmppManager;
 import org.jivesoftware.smack.*;
 
 import java.io.IOException;
 
 /**
- * XMPP连接适配器
- * Created by JerSuen on 14-5-4.
+ * XMPP连接管理
+ * @author JerSuen
  */
-public class XmppConnectionAdapter extends IXmppConnection.Stub{
+public class XmppManager extends IXmppManager.Stub {
 
     private XMPPConnection connection;
     private String account, password;
     private ConnectionListener connectionListener;
 
-    public XmppConnectionAdapter(String serviceName, String account, String password) {
-       this(new XMPPTCPConnection(serviceName), account, password);
-    }
-
-    public XmppConnectionAdapter( ConnectionConfiguration config, String account, String password) {
+    public XmppManager(ConnectionConfiguration config, String account, String password) {
         this(new XMPPTCPConnection(config), account, password);
     }
 
-    public XmppConnectionAdapter(XMPPConnection connection, String account, String password) {
+    public XmppManager(XMPPConnection connection, String account, String password) {
         this.connection = connection;
         this.account = account;
         this.password = password;
     }
 
-    /**建立XMPP连接*/
+    /**
+     * 建立XMPP连接
+     */
     public boolean connect() throws RemoteException {
         // 已经连接
         if (connection.isConnected()) {
@@ -56,20 +54,22 @@ public class XmppConnectionAdapter extends IXmppConnection.Stub{
         return false;
     }
 
-    /**登陆XMPP服务器*/
+
+    /**
+     * 登陆XMPP服务器
+     */
     public boolean login() throws RemoteException {
         // 未建立XMPP连接
-        if (connection.isConnected()) {
+        if (!connection.isConnected()) {
             return false;
         }
         // 应经登陆过
         if (connection.isAuthenticated()) {
             return true;
         } else {
+            // 开始登陆
             try {
-                // 开始登陆
                 connection.login(account, password);
-                return true;
             } catch (XMPPException e) {
                 e.printStackTrace();
             } catch (SmackException e) {
@@ -77,21 +77,23 @@ public class XmppConnectionAdapter extends IXmppConnection.Stub{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return true;
         }
-        return false;
     }
 
-    /**关闭XMPP连接*/
+    /**
+     * 关闭XMPP连接
+     */
     public boolean disconnect() throws RemoteException {
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
-            return true;
-
         }
-        return false;
+        return true;
     }
 
-    /**XMPP连接监听器*/
+    /**
+     * XMPP连接监听器
+     */
     private class MConnectionListener implements ConnectionListener {
 
         public void connected(XMPPConnection connection) {

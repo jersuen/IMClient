@@ -1,6 +1,6 @@
 package com.jersuen.im.service.aidl;
 
-interface IXmppConnection {
+interface IXmppManager {
 
         /**建立连接*/
         boolean connect();
