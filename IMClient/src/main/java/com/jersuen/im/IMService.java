@@ -50,7 +50,7 @@ public class IMService extends Service {
     /**创建XmppManager*/
     public XmppManager createConnection() {
         if (connection == null) {
-            connection = new XmppManager(initConnectionConfig(), IM.getString(IM.ACCOUNT_USERNAME), IM.getString(IM.ACCOUNT_PASSWORD));
+            connection = new XmppManager(initConnectionConfig(), IM.getString(IM.ACCOUNT_USERNAME), IM.getString(IM.ACCOUNT_PASSWORD), this);
         }
         return connection;
     }

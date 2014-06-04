@@ -1,10 +1,18 @@
 package com.jersuen.im.service;
 
+import android.content.ContentValues;
 import android.os.RemoteException;
+import com.jersuen.im.IMService;
+import com.jersuen.im.R;
+import com.jersuen.im.provider.ContactProvider;
 import com.jersuen.im.service.aidl.IXmppManager;
+import com.jersuen.im.util.LogUtils;
+import com.jersuen.im.util.PinYin;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.packet.Presence;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * XMPP连接管理
@@ -15,15 +23,18 @@ public class XmppManager extends IXmppManager.Stub {
     private XMPPConnection connection;
     private String account, password;
     private ConnectionListener connectionListener;
+    private RosterListener rosterListener;
+    private IMService imService;
 
-    public XmppManager(ConnectionConfiguration config, String account, String password) {
-        this(new XMPPTCPConnection(config), account, password);
+    public XmppManager(ConnectionConfiguration config, String account, String password, IMService imService) {
+        this(new XMPPTCPConnection(config), account, password, imService);
     }
 
-    public XmppManager(XMPPConnection connection, String account, String password) {
+    public XmppManager(XMPPConnection connection, String account, String password, IMService imService) {
         this.connection = connection;
         this.account = account;
         this.password = password;
+        this.imService = imService;
     }
 
     /**
@@ -39,7 +50,7 @@ public class XmppManager extends IXmppManager.Stub {
                 connection.connect();
                 if (connectionListener == null) {
                     // 添加一个连接监听器
-                    connectionListener = new MConnectionListener();
+                    connectionListener = new IMClientConnectListener();
                 }
                 connection.addConnectionListener(connectionListener);
                 return true;
@@ -69,7 +80,28 @@ public class XmppManager extends IXmppManager.Stub {
         } else {
             // 开始登陆
             try {
-                connection.login(account, password);
+                connection.login(account, password, imService.getString(R.string.app_name));
+                Roster roster = connection.getRoster();
+                if (rosterListener == null) {
+                    rosterListener = new IMClientRosterListener();
+                }
+                if (roster != null && roster.getEntries().size() > 0) {
+                    // 添加花名册监听器
+                    roster.addRosterListener(rosterListener);
+                    for (RosterEntry entry : roster.getEntries()) {
+                        ContentValues values = new ContentValues();
+                        values.put(ContactProvider.ContactColumns.ACCOUNT, entry.getUser());
+                        values.put(ContactProvider.ContactColumns.AVATAR, "");
+                        LogUtils.LOGD(XmppManager.class, "name :" + entry.getName());
+                        values.put(ContactProvider.ContactColumns.NICKNAME, entry.getName());
+                        values.put(ContactProvider.ContactColumns.SORT, PinYin.getPinYin(entry.getName()));
+                        // 储存联系人
+                        if (imService.getContentResolver().update(ContactProvider.CONTACT_URI, values, ContactProvider.ContactColumns.ACCOUNT + " = ?", new String[]{entry.getUser()}) == 0) {
+                            imService.getContentResolver().insert(ContactProvider.CONTACT_URI, values);
+                        }
+                    }
+                }
+
             } catch (XMPPException e) {
                 e.printStackTrace();
             } catch (SmackException e) {
@@ -94,7 +126,7 @@ public class XmppManager extends IXmppManager.Stub {
     /**
      * XMPP连接监听器
      */
-    private class MConnectionListener implements ConnectionListener {
+    private class IMClientConnectListener implements ConnectionListener {
 
         public void connected(XMPPConnection connection) {
 
@@ -121,6 +153,26 @@ public class XmppManager extends IXmppManager.Stub {
         }
 
         public void reconnectionFailed(Exception e) {
+
+        }
+    }
+
+    /**花名册监听器*/
+    private class IMClientRosterListener implements RosterListener {
+
+        public void entriesAdded(Collection<String> strings) {
+
+        }
+
+        public void entriesUpdated(Collection<String> strings) {
+
+        }
+
+        public void entriesDeleted(Collection<String> strings) {
+
+        }
+
+        public void presenceChanged(Presence presence) {
 
         }
     }

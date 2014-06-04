@@ -5,12 +5,10 @@
     android:orientation="vertical"
     tools:context="com.jersuen.im.ui.fragment.ContactFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/activity_main_btn_contact"
-            android:gravity="center"
-
+    <ListView
+            android:id="@+id/fragment_contact_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             />
 
 </LinearLayout>

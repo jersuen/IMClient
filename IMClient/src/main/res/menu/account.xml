@@ -3,7 +3,7 @@
     tools:context="com.jersuen.im.ui.AccountActivity" >
     
     <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:title="@string/app_name"
         android:orderInCategory="100"
         android:showAsAction="never" />
 </menu>

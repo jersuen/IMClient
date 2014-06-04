@@ -25,6 +25,8 @@
                 >
         </service>
 
+        <provider android:authorities="com.jersuen.im.provider.ContactProvider" android:name=".provider.ContactProvider"/>
+
         <activity
                 android:name="com.jersuen.im.ui.AccountActivity"
                 android:label="@string/title_activity_account">

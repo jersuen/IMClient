@@ -5,22 +5,22 @@
               android:layout_height="match_parent"
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
               android:paddingBottom="@dimen/activity_vertical_margin"
               android:orientation="vertical"
               tools:context="com.jersuen.im.MainActivity">
 
     <RadioGroup
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:orientation="horizontal"
+            android:gravity="center"
             >
         <RadioButton
                 android:id="@+id/activity_main_btn_session"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:text="回话"
+                android:text="@string/activity_main_btn_session"
                 android:gravity="center"
                 android:button="@null"
                 />]
@@ -29,7 +29,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:text="联系人"
+                android:text="@string/activity_main_btn_contact"
                 android:gravity="center"
                 android:button="@null"
                 />
