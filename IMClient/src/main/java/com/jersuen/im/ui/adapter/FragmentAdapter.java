@@ -3,8 +3,8 @@ package com.jersuen.im.ui.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import com.jersuen.im.ui.fragment.ContactFragment;
-import com.jersuen.im.ui.fragment.SessionFragment;
+import com.jersuen.im.ui.fragment.ContactsFragment;
+import com.jersuen.im.ui.fragment.SessionsFragment;
 
 /**
  * 主界面碎片适配器
@@ -21,10 +21,10 @@ public class FragmentAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                fragment = new SessionFragment();
+                fragment = new SessionsFragment();
                 break;
             case 1:
-                fragment = new ContactFragment();
+                fragment = new ContactsFragment();
                 break;
         }
         return fragment;

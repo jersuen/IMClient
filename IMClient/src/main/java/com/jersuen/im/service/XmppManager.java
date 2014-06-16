@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.os.RemoteException;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
-import com.jersuen.im.provider.ContactProvider;
+import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.util.LogUtils;
 import com.jersuen.im.util.PinYin;
@@ -90,14 +90,14 @@ public class XmppManager extends IXmppManager.Stub {
                     roster.addRosterListener(rosterListener);
                     for (RosterEntry entry : roster.getEntries()) {
                         ContentValues values = new ContentValues();
-                        values.put(ContactProvider.ContactColumns.ACCOUNT, entry.getUser());
-                        values.put(ContactProvider.ContactColumns.AVATAR, "");
+                        values.put(ContactsProvider.ContactColumns.ACCOUNT, entry.getUser());
+                        values.put(ContactsProvider.ContactColumns.AVATAR, "");
                         LogUtils.LOGD(XmppManager.class, "name :" + entry.getName());
-                        values.put(ContactProvider.ContactColumns.NICKNAME, entry.getName());
-                        values.put(ContactProvider.ContactColumns.SORT, PinYin.getPinYin(entry.getName()));
+                        values.put(ContactsProvider.ContactColumns.NICKNAME, entry.getName());
+                        values.put(ContactsProvider.ContactColumns.SORT, PinYin.getPinYin(entry.getName()));
                         // 储存联系人
-                        if (imService.getContentResolver().update(ContactProvider.CONTACT_URI, values, ContactProvider.ContactColumns.ACCOUNT + " = ?", new String[]{entry.getUser()}) == 0) {
-                            imService.getContentResolver().insert(ContactProvider.CONTACT_URI, values);
+                        if (imService.getContentResolver().update(ContactsProvider.CONTACT_URI, values, ContactsProvider.ContactColumns.ACCOUNT + " = ?", new String[]{entry.getUser()}) == 0) {
+                            imService.getContentResolver().insert(ContactsProvider.CONTACT_URI, values);
                         }
                     }
                 }

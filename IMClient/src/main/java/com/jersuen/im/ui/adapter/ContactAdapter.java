@@ -3,7 +3,7 @@ package com.jersuen.im.ui.adapter;
 import android.widget.SimpleCursorAdapter;
 import com.jersuen.im.IM;
 import com.jersuen.im.R;
-import com.jersuen.im.provider.ContactProvider;
+import com.jersuen.im.provider.ContactsProvider;
 
 /**
  * 联系人适配器
@@ -15,8 +15,8 @@ public class ContactAdapter extends SimpleCursorAdapter {
         super(
                 IM.im,
                 R.layout.fragment_contact_list_item,
-                IM.im.getContentResolver().query(ContactProvider.CONTACT_URI,null,null,null,null),
-                new String[]{ContactProvider.ContactColumns.NICKNAME},
+                IM.im.getContentResolver().query(ContactsProvider.CONTACT_URI,null,null,null,null),
+                new String[]{ContactsProvider.ContactColumns.NICKNAME},
                 new int[]{R.id.fragment_contact_list_item_name},
                 FLAG_REGISTER_CONTENT_OBSERVER);
     }

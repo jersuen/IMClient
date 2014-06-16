@@ -1,6 +1,7 @@
 package com.jersuen.im.ui.fragment;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,8 +34,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,8 +50,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fragment_login_btn_login:
-                new AsyncTask<String, Void, Boolean>(){
-                    protected Boolean doInBackground(String... strings) {
+                new AsyncTask<String, Void, Integer>(){
+
+                    private final int OK = 0;
+                    private final int ERROR_ACCOUNT = 1;
+                    private final int ERROR_CONNECT = 2;
+                    private ProgressDialog dialog;
+
+                    protected void onPreExecute() {
+                        dialog = ProgressDialog.show(getActivity(), null, "");
+                    }
+
+                    protected Integer doInBackground(String... strings) {
                         ConnectionConfiguration config = new ConnectionConfiguration(IM.HOST, IM.PORT);
                         config.setDebuggerEnabled(true);
                         // 关闭安全模式
@@ -61,29 +70,39 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         try {
                             connection.connect();
                             connection.login(strings[0], strings[1]);
+                            return OK;
                         } catch (XMPPException e) {
                             e.printStackTrace();
-                            return false;
+                            return ERROR_ACCOUNT;
                         } catch (SmackException e) {
                             e.printStackTrace();
+                            return ERROR_CONNECT;
                         } catch (IOException e) {
                             e.printStackTrace();
+                            return ERROR_CONNECT;
                         } finally {
                             connection.disconnect();
                         }
-                        return true;
                     }
 
-                    protected void onPostExecute(Boolean aBoolean) {
-                        if (aBoolean) {
-                            // 1. 保存账户信息,并启动XMPP后台
-                            IM.putString(IM.ACCOUNT_USERNAME, inAccount.getText().toString());
-                            IM.putString(IM.ACCOUNT_PASSWORD, inPassword.getText().toString());
-                            getActivity().startService(new Intent(getActivity(), IMService.class));
-
-                            // 2. 跳转
-                            startActivity(new Intent(getActivity(), MainActivity.class));
-                            getActivity().finish();
+                    protected void onPostExecute(Integer integer) {
+                        dialog.dismiss();
+                        switch (integer) {
+                            case OK:
+                                // 1. 保存账户信息,并启动XMPP后台
+                                IM.putString(IM.ACCOUNT_USERNAME, inAccount.getText().toString());
+                                IM.putString(IM.ACCOUNT_PASSWORD, inPassword.getText().toString());
+                                getActivity().startService(new Intent(getActivity(), IMService.class));
+                                // 2. 跳转
+                                startActivity(new Intent(getActivity(), MainActivity.class));
+                                getActivity().finish();
+                                break;
+                            case ERROR_ACCOUNT:
+                                Toast.makeText(getActivity(), "账户验证失败", Toast.LENGTH_LONG).show();
+                                break;
+                            case ERROR_CONNECT:
+                                Toast.makeText(getActivity(), "网络错误", Toast.LENGTH_LONG).show();
+                                break;
                         }
                     }
                 }.execute(inAccount.getText().toString(), inPassword.getText().toString());

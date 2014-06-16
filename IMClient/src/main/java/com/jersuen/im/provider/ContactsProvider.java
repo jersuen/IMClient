@@ -17,8 +17,8 @@ import android.provider.BaseColumns;
  * 联系人提供者
  * @author JerSuen
  */
-public class ContactProvider extends ContentProvider{
-	private static final String AUTHORITY = ContactProvider.class.getCanonicalName();
+public class ContactsProvider extends ContentProvider{
+	private static final String AUTHORITY = ContactsProvider.class.getCanonicalName();
 
 	//联系人表
 	private static final String CONTACT_TABLE = "contact";
