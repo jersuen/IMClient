@@ -2,8 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.jersuen.im.MainActivity" >
     
-    <item android:id="@+id/action_settings"
-        android:title="@string/app_name"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+    
+    <item android:id="@+id/action_search"
+          android:icon="@android:drawable/ic_menu_search"
+          android:showAsAction="ifRoom"
+          android:title="搜索"
+          android:actionViewClass="android.widget.SearchView" />
+    
+    <item android:id="@+id/action_add"  
+          android:icon="@android:drawable/ic_menu_add"  
+          android:showAsAction="always"
+          android:title="添加" />  
 </menu>

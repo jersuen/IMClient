@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,24 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fragment_login_btn_login:
+                String accountStr = inAccount.getText().toString().trim();
+                String passwordStr = inPassword.getText().toString().trim();
+
+                if (TextUtils.isEmpty(accountStr) && TextUtils.isEmpty(passwordStr)) {
+                    Toast.makeText(getActivity(), "账户和密码不能为空", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(accountStr)) {
+                    Toast.makeText(getActivity(), "请输入账户", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(passwordStr)) {
+                    Toast.makeText(getActivity(), "请输入密码", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 new AsyncTask<String, Void, Integer>(){
 
                     private final int OK = 0;
@@ -58,7 +77,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     private ProgressDialog dialog;
 
                     protected void onPreExecute() {
-                        dialog = ProgressDialog.show(getActivity(), null, "");
+                        dialog = ProgressDialog.show(getActivity(), null, "正在验证账户,请稍后...");
                     }
 
                     protected Integer doInBackground(String... strings) {
