@@ -106,6 +106,7 @@ public class XmppManager extends IXmppManager.Stub {
                         }
                     }
                     if (uri != null) {
+
                         imService.getContentResolver().notifyChange(uri, null);
                     }
                 }
