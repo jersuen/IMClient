@@ -1,6 +1,7 @@
 package com.jersuen.im.service;
 
 import android.content.ContentValues;
+import android.net.Uri;
 import android.os.RemoteException;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
@@ -13,6 +14,7 @@ import org.jivesoftware.smack.packet.Presence;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * XMPP连接管理
@@ -88,17 +90,23 @@ public class XmppManager extends IXmppManager.Stub {
                 if (roster != null && roster.getEntries().size() > 0) {
                     // 添加花名册监听器
                     roster.addRosterListener(rosterListener);
+                    Uri uri = null;
                     for (RosterEntry entry : roster.getEntries()) {
                         ContentValues values = new ContentValues();
                         values.put(ContactsProvider.ContactColumns.ACCOUNT, entry.getUser());
                         values.put(ContactsProvider.ContactColumns.AVATAR, "");
                         LogUtils.LOGD(XmppManager.class, "name :" + entry.getName());
                         values.put(ContactsProvider.ContactColumns.NICKNAME, entry.getName());
-                        values.put(ContactsProvider.ContactColumns.SORT, PinYin.getPinYin(entry.getName()));
+                        String sortStr =  PinYin.getPinYin(entry.getName());
+                        values.put(ContactsProvider.ContactColumns.SORT, sortStr);
+                        values.put(ContactsProvider.ContactColumns.SECTION, sortStr.substring(0,1).toUpperCase(Locale.ENGLISH));
                         // 储存联系人
                         if (imService.getContentResolver().update(ContactsProvider.CONTACT_URI, values, ContactsProvider.ContactColumns.ACCOUNT + " = ?", new String[]{entry.getUser()}) == 0) {
-                            imService.getContentResolver().insert(ContactsProvider.CONTACT_URI, values);
+                            uri = imService.getContentResolver().insert(ContactsProvider.CONTACT_URI, values);
                         }
+                    }
+                    if (uri != null) {
+                        imService.getContentResolver().notifyChange(uri, null);
                     }
                 }
 
