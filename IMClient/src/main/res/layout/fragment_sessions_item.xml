@@ -1,0 +1,74 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <FrameLayout
+            android:id="@+id/fragment_sessions_item_avatar_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/fragment_sessions_item_avatar"
+                android:layout_marginLeft="10dp"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:src="@drawable/ic_launcher"
+                android:scaleType="center"
+                />
+        <TextView
+                android:id="@+id/fragment_sessions_item_count"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="60dp"
+                android:background="@android:color/holo_blue_bright"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:text="10"/>
+    </FrameLayout>
+
+    <TextView
+            android:id="@+id/fragment_sessions_item_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_sessions_item_name"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/fragment_sessions_item_avatar_layout"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="我在忙，等一会"
+            android:textColor="#6f6f6f"
+            android:textSize="16sp"/>
+
+    <TextView
+            android:id="@+id/fragment_sessions_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="7dp"
+            android:layout_toRightOf="@+id/fragment_sessions_item_avatar_layout"
+            android:linksClickable="false"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="@string/app_name"
+            android:textColor="#000000"
+            android:textColorLink="#ffffff"
+            android:textSize="20sp"/>
+
+
+    <TextView
+            android:id="@+id/fragment_sessions_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/fragment_sessions_item_name"
+            android:layout_marginRight="10dp"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="15:38"
+            android:textColor="#706f6f"
+            android:textSize="16sp"/>
+    
+    
+</RelativeLayout>
