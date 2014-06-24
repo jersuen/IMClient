@@ -11,4 +11,6 @@ interface IXmppManager {
         /**关闭连接*/
         boolean disconnect();
 
+        /**发送消息*/
+        void sendMessage(String sessionJID, String sessionName, String message, String type);
 }

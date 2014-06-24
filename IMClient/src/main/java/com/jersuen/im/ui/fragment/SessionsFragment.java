@@ -2,6 +2,7 @@ package com.jersuen.im.ui.fragment;
 
 
 
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,15 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.SMSProvider;
+import com.jersuen.im.service.Contact;
+import com.jersuen.im.ui.ChatActivity;
 import com.jersuen.im.ui.adapter.SessionsAdapter;
 
 /**
  * 会话列表
  * @author JerSuen
  */
-public class SessionsFragment extends ListFragment {
+public class SessionsFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
     private SessionsAdapter adapter;
     private ContentObserver co;
@@ -49,6 +53,7 @@ public class SessionsFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setAdapter(adapter);
+        getListView().setOnItemClickListener(this);
     }
 
 
@@ -56,5 +61,14 @@ public class SessionsFragment extends ListFragment {
         // 销毁内容观察者
         getActivity().getContentResolver().unregisterContentObserver(co);
         super.onDestroy();
+    }
+
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // 启动聊天室
+        Cursor cursor = (Cursor) adapter.getItem(i);
+        Contact contact = new Contact();
+        contact.account = cursor.getString(cursor.getColumnIndex(SMSProvider.SMSColumns.SESSION_ID));
+        contact.name = cursor.getString(cursor.getColumnIndex(SMSProvider.SMSColumns.SESSION_NAME));
+        startActivity(new Intent(getActivity(), ChatActivity.class).putExtra(ChatActivity.EXTRA_CONTACT, contact));
     }
 }

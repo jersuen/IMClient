@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import com.jersuen.im.IM;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
@@ -19,8 +20,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * XMPP连接管理
@@ -34,7 +34,7 @@ public class XmppManager extends IXmppManager.Stub {
     private RosterListener rosterListener;
     private IMService imService;
     private PacketListener messageListener;
-
+    private Map<String, Chat> jidChats = Collections.synchronizedMap(new HashMap<String, Chat>());
 
     public XmppManager(ConnectionConfiguration config, String account, String password, IMService imService) {
         this(new XMPPTCPConnection(config), account, password, imService);
@@ -146,6 +146,48 @@ public class XmppManager extends IXmppManager.Stub {
         return true;
     }
 
+    /**发送消息*/
+    public void sendMessage(String sessionJID, String sessionName, String message, String type) throws RemoteException {
+        ChatManager chatManager = ChatManager.getInstanceFor(connection);
+        Chat chat;
+        // 查找Chat对策
+        if (jidChats.containsKey(sessionJID)) {
+            chat = jidChats.get(sessionJID);
+        // 创建Chat
+        } else {
+            chat = chatManager.createChat(sessionJID, null);
+            // 添加到集合
+            jidChats.put(sessionJID, chat);
+        }
+
+        if (chat != null) {
+            try {
+                // 发送消息
+                chat.sendMessage(message);
+
+                // 保存聊天记录
+                ContentValues values = new ContentValues();
+                values.put(SMSProvider.SMSColumns.BODY, message);
+                values.put(SMSProvider.SMSColumns.TYPE, type);
+                values.put(SMSProvider.SMSColumns.TIME, System.currentTimeMillis());
+
+                values.put(SMSProvider.SMSColumns.WHO_ID, IM.getString(IM.ACCOUNT_USERNAME) + "@" + IM.HOST);
+                values.put(SMSProvider.SMSColumns.WHO_AVATAR, "");
+                values.put(SMSProvider.SMSColumns.WHO_NAME, IM.getString(IM.ACCOUNT_USERNAME));
+
+                values.put(SMSProvider.SMSColumns.SESSION_ID, sessionJID);
+                values.put(SMSProvider.SMSColumns.SESSION_NAME, sessionName);
+
+                imService.getContentResolver().insert(SMSProvider.SMS_URI, values);
+
+            } catch (XMPPException e) {
+                e.printStackTrace();
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * XMPP连接监听器
      */
@@ -206,18 +248,6 @@ public class XmppManager extends IXmppManager.Stub {
         public void processPacket(Packet packet) throws SmackException.NotConnectedException {
             if (packet instanceof Message) {
                 Message message = (Message) packet;
-                /**
-                 * a:我们
-                 *
-                 * b:对方
-                 *
-                 *
-                 * b --> a
-                 *
-                 *
-                 *
-                 */
-
                 // 聊天消息
                 if (message.getType() == Message.Type.chat) {
                     String whoAccountStr = StringUtils.parseBareAddress(message.getFrom());
@@ -230,7 +260,6 @@ public class XmppManager extends IXmppManager.Stub {
                         whoNameStr = cursor.getString(cursor.getColumnIndex(ContactsProvider.ContactColumns.NICKNAME));
                     }
 
-
                     String bodyStr = message.getBody();
                     String typeStr = "chat";
 
@@ -238,6 +267,7 @@ public class XmppManager extends IXmppManager.Stub {
                     ContentValues values = new ContentValues();
                     values.put(SMSProvider.SMSColumns.BODY, bodyStr);
                     values.put(SMSProvider.SMSColumns.TYPE, typeStr);
+                    values.put(SMSProvider.SMSColumns.TIME, System.currentTimeMillis());
 
                     values.put(SMSProvider.SMSColumns.WHO_ID, whoAccountStr);
                     values.put(SMSProvider.SMSColumns.WHO_AVATAR, "");

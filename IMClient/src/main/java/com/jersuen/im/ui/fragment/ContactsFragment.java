@@ -1,5 +1,6 @@
 package com.jersuen.im.ui.fragment;
 
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.provider.ContactsProvider.ContactColumns;
 import com.jersuen.im.service.Contact;
+import com.jersuen.im.ui.ChatActivity;
 import com.jersuen.im.ui.adapter.ContactsAdapter;
 import com.jersuen.im.util.LogUtils;
 
@@ -108,7 +110,6 @@ public class ContactsFragment extends ListFragment implements OnItemClickListene
                         item.sectionPosition = sectionPosition;
                         item.listPosition = listPosition++;
                         adapter.add(item);
-                        entry.close();
                     }
                 }
                 entry.close();
@@ -148,7 +149,7 @@ public class ContactsFragment extends ListFragment implements OnItemClickListene
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Item item = adapter.getItem(position);
         if(item.contact != null) {
-            //startActivity(new Intent(getActivity(), ChatActivity.class).putExtra(ChatActivity.EXTRA_CONTACT, item.contact));
+            startActivity(new Intent(getActivity(), ChatActivity.class).putExtra(ChatActivity.EXTRA_CONTACT, item.contact));
         }
     }
 }
