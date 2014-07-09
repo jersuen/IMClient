@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="20dp"
-    android:gravity="right|center"
-    android:orientation="vertical" >
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+        >
 
-    <TextView
-        android:id="@+id/activity_chat_item_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="right|center"
-        android:paddingRight="10dp"
-        android:text="@string/app_name" />
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|clip_vertical|center"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            >
+        <TextView
+                android:id="@+id/activity_chat_item_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:background="@drawable/chat_right_normal"
+                />
 
+        <com.jersuen.im.ui.view.RoundedImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/account"
+                android:scaleType="centerCrop"
+                app:border_color="#96C7DA"
+                app:border_width="1dp"
+                app:corner_radius="90dp"
+                app:oval="false"
+                android:id="@+id/view"/>
+    </LinearLayout>
 </LinearLayout>
