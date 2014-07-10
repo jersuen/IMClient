@@ -11,7 +11,8 @@ public class IM extends Application {
     public static final String ACCOUNT_USERNAME = "account_username";
     public static final String ACCOUNT_PASSWORD = "account_password";
 
-    public static final String HOST = "192.168.1.123";
+    //public static final String HOST = "192.168.1.123";
+    public static final String HOST = "192.168.199.123";
     public static final int PORT = 5222;
     public static IM im;
 

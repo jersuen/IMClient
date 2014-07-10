@@ -18,6 +18,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.IOException;
 import java.util.*;
@@ -104,9 +105,11 @@ public class XmppManager extends IXmppManager.Stub {
                 roster.addRosterListener(rosterListener);
                 // 获取联系人
                 if (roster != null && roster.getEntries().size() > 0) {
-
                     Uri uri = null;
                     for (RosterEntry entry : roster.getEntries()) {
+
+                        VCard vCard = new VCard();
+                        vCard.load(connection, entry.getUser());
                         ContentValues values = new ContentValues();
                         values.put(ContactsProvider.ContactColumns.ACCOUNT, entry.getUser());
                         values.put(ContactsProvider.ContactColumns.AVATAR, "");

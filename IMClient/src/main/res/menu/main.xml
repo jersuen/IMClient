@@ -12,5 +12,25 @@
     <item android:id="@+id/action_add"  
           android:icon="@android:drawable/ic_menu_add"  
           android:showAsAction="always"
-          android:title="添加" />  
+          android:title="添加" />
+
+    <item
+            android:id="@+id/item"
+            android:orderInCategory="3"
+            android:showAsAction="ifRoom|withText"
+            android:title="item"
+            />
+
+    <item
+            android:id="@+id/item1"
+            android:orderInCategory="2"
+            android:showAsAction="ifRoom|withText"
+            android:title="item1"
+            />
+    <item
+            android:id="@+id/item2"
+            android:orderInCategory="1"
+            android:showAsAction="ifRoom|withText"
+            android:title="item2"
+            />
 </menu>
