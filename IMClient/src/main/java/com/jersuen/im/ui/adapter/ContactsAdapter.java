@@ -1,79 +1,148 @@
 package com.jersuen.im.ui.adapter;
 
-import android.content.Context;
-import android.graphics.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.database.Cursor;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.SectionIndexer;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jersuen.im.IM;
 import com.jersuen.im.R;
-import com.jersuen.im.ui.fragment.ContactsFragment;
-import com.jersuen.im.ui.fragment.ContactsFragment.Item;
+import com.jersuen.im.provider.ContactsProvider;
+import com.jersuen.im.provider.ContactsProvider.ContactColumns;
+import com.jersuen.im.service.Contact;
 import com.jersuen.im.ui.view.PinnedSectionListView.PinnedSectionListAdapter;
 
-/** 联系人适配器 */
-public class ContactsAdapter extends ArrayAdapter<ContactsFragment.Item> implements PinnedSectionListAdapter, SectionIndexer {
+/**
+ * 联系人适配器
+ * @author JerSuen
+ */
+public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAdapter {
+    private static final int[] COLORS = new int[] { R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
+    private List<Item> items;
 
-	public ContactsAdapter(Context context, int resource) {
-		super(context, resource);
-	}
+    public ContactsAdapter() {
+        Cursor group = IM.im.getContentResolver().query(ContactsProvider.CONTACT_GROUP_URI, null, null, null, ContactColumns.SECTION);
+        if (group != null && group.getCount() > 0) {
+            items = new ArrayList<ContactsAdapter.Item>();
+            for (int i = 0; i < group.getCount(); i++) {
+                int sectionPosition = 0, listPosition = 0;
+                group.moveToPosition(i);
+                String index = group.getString(group.getColumnIndex(ContactColumns.SECTION));
+                Item section = new Item(Item.SECTION, index, null);
+                section.sectionPosition = sectionPosition;
+                section.listPosition = listPosition++;
+                items.add(section);
+                Cursor entry = IM.im.getContentResolver().query(ContactsProvider.CONTACT_URI, null, ContactColumns.SECTION + " = ?", new String[] { index }, ContactColumns.SORT);
+                if (entry != null && entry.getCount() > 0) {
+                    for (int j = 0; j < entry.getCount(); j++) {
+                        entry.moveToPosition(j);
+                        String avatar = entry.getString(entry.getColumnIndex(ContactColumns.AVATAR));
+                        String name = entry.getString(entry.getColumnIndex(ContactColumns.NICKNAME));
+                        String account = entry.getString(entry.getColumnIndex(ContactColumns.ACCOUNT));
+                        String sort = entry.getString(entry.getColumnIndex(ContactColumns.SORT));
 
-	// 标题颜色
-	private static final int[] COLORS = new int[] { R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
-	private ContactsFragment.Item[] sections;
+                        Contact contact = new Contact();
+                        contact.account = account;
+                        contact.avatar = avatar;
+                        contact.name = name;
+                        contact.sort = sort;
+                        contact.index = index;
 
-	public ContactsAdapter(Context context, int resource, int textViewResourceId) {
-		super(context, resource, textViewResourceId);
-	}
+                        Item item = new Item(Item.ITEM, name, contact);
+                        item.sectionPosition = sectionPosition;
+                        item.listPosition = listPosition++;
 
-	public View getView(int position, View convertView, ViewGroup parent) {
-		TextView view = (TextView) super.getView(position, convertView, parent);
-		view.setTextColor(Color.DKGRAY);
-		view.setTag("" + position);
-		ContactsFragment.Item item = getItem(position);
-		if (item.type == ContactsFragment.Item.SECTION) {
-			view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
-		}
-		return view;
-	}
+                        items.add(item);
+                    }
+                }
+                sectionPosition++;
+            }
+        }
+    }
 
-	public void prepareSections(int sectionsNumber) {
-		sections = new ContactsFragment.Item[sectionsNumber];
-	}
+    public boolean isItemViewTypePinned(int viewType) {
+        return viewType == Item.SECTION;
+    }
 
-	public void onSectionAdded(ContactsFragment.Item section, int sectionPosition) {
-		sections[sectionPosition] = section;
-	}
+    public int getViewTypeCount() {
+        return 2;
+    }
 
-	public ContactsFragment.Item[] getSections() {
-		return sections;
-	}
+    public int getItemViewType(int position) {
+        return getItem(position).type;
+    }
+    public static class Item {
 
-	public int getPositionForSection(int section) {
-		if (section >= sections.length) {
-			section = sections.length - 1;
-		}
-		return sections[section].listPosition;
-	}
+        public static final int ITEM = 0;
+        public static final int SECTION = 1;
 
-	public int getSectionForPosition(int position) {
-		if (position >= getCount()) {
-			position = getCount() - 1;
-		}
-		return getItem(position).sectionPosition;
-	}
+        public final int type;
+        public final String text;
+        public final Contact contact;
+        public int sectionPosition;
+        public int listPosition;
 
-	public int getViewTypeCount() {
-		return 2;
-	}
+        public Item(int type, String text, Contact contact) {
+            this.type = type;
+            this.text = text;
+            this.contact = contact;
+        }
 
-	public int getItemViewType(int position) {
-		return getItem(position).type;
-	}
+        public String toString() {
+            return text;
+        }
 
-	public boolean isItemViewTypePinned(int viewType) {
-		return viewType == Item.SECTION;
-	}
+    }
+
+    public int getCount() {
+        return (items == null) ? 0 : items.size();
+    }
+
+    public Item getItem(int position) {
+        return items.get(position);
+    }
+
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_contacts_list_item, null);
+            holder.avatar = (ImageView) convertView.findViewById(R.id.fragment_contacts_list_item_avatar);
+            holder.name = (TextView) convertView.findViewById(R.id.fragment_contacts_list_item_name);
+            holder.title = (TextView) convertView.findViewById(R.id.fragment_contacts_list_item_title);
+            holder.layout = convertView.findViewById(R.id.fragment_contacts_list_item_layout);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        Item item = getItem(position);
+        if (item.type == Item.SECTION) {
+            holder.layout.setVisibility(View.GONE);
+            holder.title.setVisibility(View.VISIBLE);
+            holder.title.setText(item.text);
+            //holder.title.setBackgroundColor(parent.getResources().getColor(COLORS[position % COLORS.length]));
+        } else {
+            holder.layout.setVisibility(View.VISIBLE);
+            holder.title.setVisibility(View.GONE);
+            holder.name.setText(item.contact.name);
+        }
+        return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView name,title;
+        ImageView avatar;
+        View layout;
+    }
 }

@@ -1,11 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.jersuen.im.MainActivity" >
-    
-    
+
     <item android:id="@+id/action_search"
           android:icon="@android:drawable/ic_menu_search"
-          android:showAsAction="ifRoom"
+          android:showAsAction="always"
           android:title="搜索"
           android:actionViewClass="android.widget.SearchView" />
     
@@ -14,23 +13,5 @@
           android:showAsAction="always"
           android:title="添加" />
 
-    <item
-            android:id="@+id/item"
-            android:orderInCategory="3"
-            android:showAsAction="ifRoom|withText"
-            android:title="item"
-            />
 
-    <item
-            android:id="@+id/item1"
-            android:orderInCategory="2"
-            android:showAsAction="ifRoom|withText"
-            android:title="item1"
-            />
-    <item
-            android:id="@+id/item2"
-            android:orderInCategory="1"
-            android:showAsAction="ifRoom|withText"
-            android:title="item2"
-            />
 </menu>
