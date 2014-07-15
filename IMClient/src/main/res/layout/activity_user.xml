@@ -1,0 +1,27 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.jersuen.im.ui.UserActivity">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical"
+            android:background="@android:color/holo_blue_bright"
+            android:gravity="center"
+            >
+        <com.jersuen.im.ui.view.RoundedImageView
+                android:id="@+id/activity_user_avatar"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_launcher"
+                android:scaleType="centerCrop"
+                app:border_color="#96C7DA"
+                app:border_width="2dp"
+                app:corner_radius="90dp"
+                app:oval="false"
+                />
+    </LinearLayout>
+</RelativeLayout>

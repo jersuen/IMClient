@@ -91,12 +91,16 @@ public class XmppManager extends IXmppManager.Stub {
             // 开始登陆
             try {
                 connection.login(account, password, imService.getString(R.string.app_name));
+
+                VCard me = new VCard();
+                me.load(connection);
+                IM.saveAvatar(me);
+                IM.putString(IM.ACCOUNT_AVATAR, me.getAvatarHash());
                 if (messageListener == null) {
                     messageListener = new MessageListener();
                 }
                 // 添加消息监听器
                 connection.addPacketListener(messageListener, new PacketTypeFilter(Message.class));
-
                 Roster roster = connection.getRoster();
                 if (rosterListener == null) {
                     rosterListener = new IMClientRosterListener();
@@ -127,7 +131,6 @@ public class XmppManager extends IXmppManager.Stub {
                         imService.getContentResolver().notifyChange(uri, null);
                     }
                 }
-
             } catch (XMPPException e) {
                 e.printStackTrace();
             } catch (SmackException e) {
