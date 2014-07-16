@@ -139,10 +139,8 @@ public class SMSProvider extends ContentProvider {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE " + SMS_TABLE + " (" 
 					+ SMSColumns._ID + " INTEGER PRIMARY KEY, " 
-					+ SMSColumns.WHO_AVATAR + " TEXT, " 
-					+ SMSColumns.WHO_ID + " INTEGER, " 
-					+ SMSColumns.WHO_NAME + " TEXT, " 
-					+ SMSColumns.BODY + " TEXT, " 
+					+ SMSColumns.WHO_ID + " INTEGER, "
+					+ SMSColumns.BODY + " TEXT, "
 					+ SMSColumns.TYPE + " TEXT, " 
 					+ SMSColumns.STATUS + " TEXT, " 
 					+ SMSColumns.SESSION_ID + " INTEGER, " 
@@ -160,8 +158,6 @@ public class SMSProvider extends ContentProvider {
 	/** DB Columns*/
 	public static class SMSColumns implements BaseColumns {
 		public static final String WHO_ID = "who_id";
-		public static final String WHO_NAME = "who_name";
-		public static final String WHO_AVATAR = "who_avatar";
 
         public static final String SESSION_ID = "session_id";
         public static final String SESSION_NAME = "session_name";

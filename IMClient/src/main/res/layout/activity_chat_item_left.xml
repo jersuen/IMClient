@@ -16,6 +16,7 @@
             android:layout_marginRight="10dp"
             >
         <com.jersuen.im.ui.view.RoundedImageView
+                android:id="@+id/activity_chat_item_avatar"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:src="@drawable/ic_launcher"

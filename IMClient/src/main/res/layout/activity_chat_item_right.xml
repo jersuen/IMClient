@@ -32,6 +32,6 @@
                 app:border_width="1dp"
                 app:corner_radius="90dp"
                 app:oval="false"
-                android:id="@+id/view"/>
+                android:id="@+id/activity_chat_item_avatar"/>
     </LinearLayout>
 </LinearLayout>

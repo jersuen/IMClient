@@ -17,6 +17,8 @@ import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.provider.ContactsProvider.ContactColumns;
 import com.jersuen.im.service.Contact;
 import com.jersuen.im.ui.view.PinnedSectionListView.PinnedSectionListAdapter;
+import com.jersuen.im.ui.view.RoundedImageView;
+import org.jivesoftware.smack.util.StringUtils;
 
 /**
  * 联系人适配器
@@ -42,14 +44,12 @@ public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAda
                 if (entry != null && entry.getCount() > 0) {
                     for (int j = 0; j < entry.getCount(); j++) {
                         entry.moveToPosition(j);
-                        String avatar = entry.getString(entry.getColumnIndex(ContactColumns.AVATAR));
-                        String name = entry.getString(entry.getColumnIndex(ContactColumns.NICKNAME));
+                        String name = entry.getString(entry.getColumnIndex(ContactColumns.NAME));
                         String account = entry.getString(entry.getColumnIndex(ContactColumns.ACCOUNT));
                         String sort = entry.getString(entry.getColumnIndex(ContactColumns.SORT));
 
                         Contact contact = new Contact();
                         contact.account = account;
-                        contact.avatar = avatar;
                         contact.name = name;
                         contact.sort = sort;
                         contact.index = index;
@@ -117,7 +117,7 @@ public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAda
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_contacts_list_item, null);
-            holder.avatar = (ImageView) convertView.findViewById(R.id.fragment_contacts_list_item_avatar);
+            holder.avatar = (RoundedImageView) convertView.findViewById(R.id.fragment_contacts_list_item_avatar);
             holder.name = (TextView) convertView.findViewById(R.id.fragment_contacts_list_item_name);
             holder.title = (TextView) convertView.findViewById(R.id.fragment_contacts_list_item_title);
             holder.layout = convertView.findViewById(R.id.fragment_contacts_list_item_layout);
@@ -136,13 +136,14 @@ public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAda
             holder.layout.setVisibility(View.VISIBLE);
             holder.title.setVisibility(View.GONE);
             holder.name.setText(item.contact.name);
+            holder.avatar.setImageDrawable(IM.getAvatar(StringUtils.parseName(item.contact.account)));
         }
         return convertView;
     }
 
     private static class ViewHolder {
         TextView name,title;
-        ImageView avatar;
+        RoundedImageView avatar;
         View layout;
     }
 }

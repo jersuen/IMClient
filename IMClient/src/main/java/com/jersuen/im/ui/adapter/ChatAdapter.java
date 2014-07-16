@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.jersuen.im.IM;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.SMSProvider.SMSColumns;
+import com.jersuen.im.ui.view.RoundedImageView;
 import org.jivesoftware.smack.util.StringUtils;
 
 /**
@@ -29,19 +30,29 @@ public class ChatAdapter extends CursorAdapter{
 	}
 
 	public View getView(int position, View view, ViewGroup group) {
-		switch (getItemViewType(position)) {
-		case ITEM_LEFT:
-			view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_left, null);
-			break;
-		case ITEM_RIGHT:
-			view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_right, null);
-			break;
-		}
+        ViewHolder holder;
+        if (view == null) {
+            holder = new ViewHolder();
+            switch (getItemViewType(position)) {
+                case ITEM_LEFT:
+                    view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_left, null);
+                    break;
+                case ITEM_RIGHT:
+                    view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_right, null);
+                    break;
+            }
+            holder.avatar = (RoundedImageView) view.findViewById(R.id.activity_chat_item_avatar);
+            holder.content = (TextView) view.findViewById(R.id.activity_chat_item_content);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
+        }
         // 装配
-		TextView content = (TextView) view.findViewById(R.id.activity_chat_item_content);
 		Cursor cursor = (Cursor) getItem(position);
 		String bodyStr = cursor.getString(cursor.getColumnIndex(SMSColumns.BODY));
-		content.setText(bodyStr);
+		String account = cursor.getString(cursor.getColumnIndex(SMSColumns.WHO_ID));
+        holder.content.setText(bodyStr);
+        holder.avatar.setImageDrawable(IM.getAvatar(StringUtils.parseName(account)));
 		return view;
 		
 	}
@@ -54,7 +65,7 @@ public class ChatAdapter extends CursorAdapter{
 		Cursor cursor = (Cursor) getItem(position);
 		String whoJid = cursor.getString(cursor.getColumnIndex(SMSColumns.WHO_ID));
         // 用户判断
-		if (IM.getString(IM.ACCOUNT_USERNAME).equals(StringUtils.parseName(whoJid))) {
+		if (IM.getString(IM.ACCOUNT_JID).equals(whoJid)) {
 			return ITEM_RIGHT;
 		} else {
 			return ITEM_LEFT;
@@ -64,4 +75,9 @@ public class ChatAdapter extends CursorAdapter{
     public View newView(Context context, Cursor cursor, ViewGroup parent) {return null;}
 
     public void bindView(View view, Context context, Cursor cursor) {}
+
+    private static class ViewHolder {
+        TextView content;
+        RoundedImageView avatar;
+    }
 }

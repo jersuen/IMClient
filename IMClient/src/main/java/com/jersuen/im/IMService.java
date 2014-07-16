@@ -8,6 +8,10 @@ import com.jersuen.im.service.XmppBinder;
 import com.jersuen.im.service.XmppManager;
 import com.jersuen.im.service.aidl.IXmppBinder;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smackx.vcardtemp.VCardManager;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 
 /**
  * XMPP后台服务
@@ -20,6 +24,7 @@ public class IMService extends Service {
     private IXmppBinder.Stub binder;
     public void onCreate() {
         super.onCreate();
+        configureProviderManager(ProviderManager.getInstance());
         binder = new XmppBinder(this);
     }
 
@@ -50,8 +55,13 @@ public class IMService extends Service {
     /**创建XmppManager*/
     public XmppManager createConnection() {
         if (connection == null) {
-            connection = new XmppManager(initConnectionConfig(), IM.getString(IM.ACCOUNT_USERNAME), IM.getString(IM.ACCOUNT_PASSWORD), this);
+            connection = new XmppManager(initConnectionConfig(), IM.getString(IM.ACCOUNT_JID), IM.getString(IM.ACCOUNT_PASSWORD), this);
         }
         return connection;
+    }
+
+    public void configureProviderManager (ProviderManager pm){
+        // VCard
+        pm.addIQProvider(VCardManager.ELEMENT, VCardManager.NAMESPACE, new VCardProvider());
     }
 }

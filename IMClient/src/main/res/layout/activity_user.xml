@@ -6,6 +6,7 @@
                 tools:context="com.jersuen.im.ui.UserActivity">
 
     <LinearLayout
+            android:id="@+id/activity_user_account_layout"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:orientation="vertical"
@@ -13,7 +14,7 @@
             android:gravity="center"
             >
         <com.jersuen.im.ui.view.RoundedImageView
-                android:id="@+id/activity_user_avatar"
+                android:id="@+id/activity_user_account_avatar"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:src="@drawable/ic_launcher"

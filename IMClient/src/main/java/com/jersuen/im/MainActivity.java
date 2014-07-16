@@ -14,12 +14,14 @@ import android.view.View;
 import android.widget.Toast;
 import com.jersuen.im.service.LoginAsyncTask;
 import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.ui.UserActivity;
 import com.jersuen.im.ui.adapter.FragmentAdapter;
 import com.jersuen.im.ui.view.PageIndicator;
 
 
 /**
  * 主界面
+ *
  * @author JerSuen
  */
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
@@ -30,6 +32,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ServiceConnection serviceConnect = new LoginServiceConnect();
     private IXmppBinder binder;
     private LoginAsyncTask loginTask = new LoginTask();
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -48,7 +51,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     protected void onStart() {
         super.onStart();
-        bindService(new Intent(this, IMService.class), serviceConnect , BIND_AUTO_CREATE);
+        bindService(new Intent(this, IMService.class), serviceConnect, BIND_AUTO_CREATE);
     }
 
     protected void onDestroy() {
@@ -62,11 +65,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                return true;
+            case R.id.action_account:
+                startActivity(new Intent(this, UserActivity.class).putExtra(UserActivity.EXTRA_ID, IM.getString(IM.ACCOUNT_JID)));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void onClick(View view) {
@@ -76,12 +83,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.activity_main_btn_contact:
                 viewPager.setCurrentItem(1);
-            break;
+                break;
         }
     }
 
-    /**服务连接*/
-    private class LoginServiceConnect implements ServiceConnection{
+    /**
+     * 服务连接
+     */
+    private class LoginServiceConnect implements ServiceConnection {
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             binder = IXmppBinder.Stub.asInterface(iBinder);

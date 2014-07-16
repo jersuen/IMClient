@@ -6,7 +6,8 @@ import com.jersuen.im.service.aidl.IXmppBinder;
 import com.jersuen.im.service.aidl.IXmppManager;
 
 /**
- * Created by JerSuen on 14-5-18.
+ * 登陆任务
+ * @author JerSuen
  */
 public class LoginAsyncTask extends AsyncTask<IXmppBinder, Void, Integer> {
 

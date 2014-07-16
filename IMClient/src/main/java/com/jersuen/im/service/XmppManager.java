@@ -91,11 +91,6 @@ public class XmppManager extends IXmppManager.Stub {
             // 开始登陆
             try {
                 connection.login(account, password, imService.getString(R.string.app_name));
-
-                VCard me = new VCard();
-                me.load(connection);
-                IM.saveAvatar(me);
-                IM.putString(IM.ACCOUNT_AVATAR, me.getAvatarHash());
                 if (messageListener == null) {
                     messageListener = new MessageListener();
                 }
@@ -107,18 +102,34 @@ public class XmppManager extends IXmppManager.Stub {
                 }
                 // 添加花名册监听器
                 roster.addRosterListener(rosterListener);
-                // 获取联系人
+                // 获取花名册
                 if (roster != null && roster.getEntries().size() > 0) {
                     Uri uri = null;
                     for (RosterEntry entry : roster.getEntries()) {
-
+                        // 获取联系人名片信息
                         VCard vCard = new VCard();
                         vCard.load(connection, entry.getUser());
+                        // 用户名称
+                        String userName = StringUtils.parseName(entry.getUser());
+                        // 用户备注
+                        String remarks = entry.getName();
+                        // 通讯录的名称
+                        String name = "";
+                        // 名称与备注判断
+                        if (userName.equals(remarks)) {
+                            // 使用联系人的昵称
+                            name = vCard.getNickName();
+                        } else {
+                            // 使用备注
+                            name = remarks;
+                        }
+                        if (vCard != null) {
+                            IM.saveAvatar(vCard.getAvatar(), StringUtils.parseName(entry.getUser()));
+                        }
                         ContentValues values = new ContentValues();
                         values.put(ContactsProvider.ContactColumns.ACCOUNT, entry.getUser());
-                        values.put(ContactsProvider.ContactColumns.AVATAR, "");
-                        values.put(ContactsProvider.ContactColumns.NICKNAME, entry.getName());
-                        String sortStr =  PinYin.getPinYin(entry.getName());
+                        values.put(ContactsProvider.ContactColumns.NAME, name);
+                        String sortStr =  PinYin.getPinYin(name);
                         values.put(ContactsProvider.ContactColumns.SORT, sortStr);
                         values.put(ContactsProvider.ContactColumns.SECTION, sortStr.substring(0,1).toUpperCase(Locale.ENGLISH));
                         // 储存联系人
@@ -177,9 +188,7 @@ public class XmppManager extends IXmppManager.Stub {
                 values.put(SMSProvider.SMSColumns.TYPE, type);
                 values.put(SMSProvider.SMSColumns.TIME, System.currentTimeMillis());
 
-                values.put(SMSProvider.SMSColumns.WHO_ID, IM.getString(IM.ACCOUNT_USERNAME) + "@" + IM.HOST);
-                values.put(SMSProvider.SMSColumns.WHO_AVATAR, "");
-                values.put(SMSProvider.SMSColumns.WHO_NAME, IM.getString(IM.ACCOUNT_USERNAME));
+                values.put(SMSProvider.SMSColumns.WHO_ID, IM.getString(IM.ACCOUNT_JID));
 
                 values.put(SMSProvider.SMSColumns.SESSION_ID, sessionJID);
                 values.put(SMSProvider.SMSColumns.SESSION_NAME, sessionName);
@@ -263,7 +272,7 @@ public class XmppManager extends IXmppManager.Stub {
                     Cursor cursor = imService.getContentResolver().query(ContactsProvider.CONTACT_URI, null, ContactsProvider.ContactColumns.ACCOUNT + " = ?", new String[]{whoAccountStr},null);
                     if (cursor != null && cursor.moveToFirst()) {
                         cursor.moveToPosition(0);
-                        whoNameStr = cursor.getString(cursor.getColumnIndex(ContactsProvider.ContactColumns.NICKNAME));
+                        whoNameStr = cursor.getString(cursor.getColumnIndex(ContactsProvider.ContactColumns.NAME));
                     }
 
                     String bodyStr = message.getBody();
@@ -276,8 +285,6 @@ public class XmppManager extends IXmppManager.Stub {
                     values.put(SMSProvider.SMSColumns.TIME, System.currentTimeMillis());
 
                     values.put(SMSProvider.SMSColumns.WHO_ID, whoAccountStr);
-                    values.put(SMSProvider.SMSColumns.WHO_AVATAR, "");
-                    values.put(SMSProvider.SMSColumns.WHO_NAME, whoNameStr);
 
                     values.put(SMSProvider.SMSColumns.SESSION_ID, whoAccountStr);
                     values.put(SMSProvider.SMSColumns.SESSION_NAME, whoNameStr);

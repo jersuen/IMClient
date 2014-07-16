@@ -127,7 +127,7 @@ public class ContactsProvider extends ContentProvider{
                 break;
         }
         if (count != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            //getContext().getContentResolver().notifyChange(uri, null);
         }
         return count;
     }
@@ -147,8 +147,7 @@ public class ContactsProvider extends ContentProvider{
             db.execSQL("CREATE TABLE " + CONTACT_TABLE + " ("
                     + ContactColumns._ID + " INTEGER PRIMARY KEY, "
                     + ContactColumns.ACCOUNT + " TEXT, "
-                    + ContactColumns.NICKNAME + " TEXT, "
-                    + ContactColumns.AVATAR + " TEXT, "
+                    + ContactColumns.NAME + " TEXT, "
                     + ContactColumns.SORT + " TEXT, "
                     + ContactColumns.SECTION + " TEXT);");
         }
@@ -161,8 +160,7 @@ public class ContactsProvider extends ContentProvider{
     }
     /**联系人列*/
     public static class ContactColumns implements BaseColumns {
-        public static final String AVATAR = "avatar";
-        public static final String NICKNAME = "nickname";
+        public static final String NAME = "name";
         public static final String ACCOUNT = "account";
         public static final String SORT = "sort";
         public static final String SECTION = "section";

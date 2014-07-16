@@ -33,7 +33,8 @@ public class ContactsFragment extends ListFragment implements OnItemClickListene
         // 内容观察者
         co = new ContentObserver(new Handler()) {
             public void onChange(boolean selfChange) {
-
+                adapter = new ContactsAdapter();
+                getListView().setAdapter(adapter);
             }
         };
         // 注册观察者

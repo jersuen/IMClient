@@ -16,7 +16,10 @@ import com.jersuen.im.IM;
 import com.jersuen.im.IMService;
 import com.jersuen.im.MainActivity;
 import com.jersuen.im.R;
+import com.jersuen.im.util.LogUtils;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.IOException;
 
@@ -88,7 +91,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         XMPPConnection connection = new XMPPTCPConnection(config);
                         try {
                             connection.connect();
-                            connection.login(strings[0], strings[1]);
+                            connection.login(strings[0], strings[1], getResources().getString(R.string.app_name));
+                            // 1. 保存账户信息,并启动XMPP后台
+                            getActivity().startService(new Intent(getActivity(), IMService.class));
+                            VCard me = new VCard();
+                            me.load(connection);
+                            // 2. 保存账户信息
+                            IM.putString(IM.ACCOUNT_JID, StringUtils.parseBareAddress(connection.getUser()));
+                            IM.putString(IM.ACCOUNT_PASSWORD, inPassword.getText().toString());
+                            IM.putString(IM.ACCOUNT_NICKNAME, me.getNickName());
+                            IM.saveAvatar(me.getAvatar(), StringUtils.parseName(connection.getUser()));
                             return OK;
                         } catch (XMPPException e) {
                             e.printStackTrace();
@@ -103,16 +115,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             connection.disconnect();
                         }
                     }
-
                     protected void onPostExecute(Integer integer) {
                         dialog.dismiss();
                         switch (integer) {
                             case OK:
-                                // 1. 保存账户信息,并启动XMPP后台
-                                IM.putString(IM.ACCOUNT_USERNAME, inAccount.getText().toString());
-                                IM.putString(IM.ACCOUNT_PASSWORD, inPassword.getText().toString());
-                                getActivity().startService(new Intent(getActivity(), IMService.class));
-                                // 2. 跳转
+                                // 3. 跳转
                                 startActivity(new Intent(getActivity(), MainActivity.class));
                                 getActivity().finish();
                                 break;
