@@ -12,24 +12,24 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fragment_login_input_account"
-            android:hint="@string/fragment_login_input_account"
+            android:id="@+id/activity_login_input_account"
+            android:hint="@string/activity_login_input_account"
             android:text="admin"
             android:layout_gravity="center_horizontal"/>
     <EditText
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/fragment_login_input_password"
+            android:hint="@string/activity_login_input_password"
             android:text="admin"
-            android:id="@+id/fragment_login_input_password"
+            android:id="@+id/activity_login_input_password"
             android:layout_gravity="center_horizontal"/>
     <Button
 
             android:layout_marginTop="20dp"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="@string/fragment_login_btn_login"
-            android:id="@+id/fragment_login_btn_login"
+            android:text="@string/activity_login_btn_login"
+            android:id="@+id/activity_login_btn_login"
             android:layout_gravity="center_horizontal"/>
 </LinearLayout>

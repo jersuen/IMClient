@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
 
-
     <application
             android:name="com.jersuen.im.IM"
             android:allowBackup="true"
@@ -33,11 +32,9 @@
                 android:name="com.jersuen.im.provider.SMSProvider"
                 android:authorities="com.jersuen.im.provider.SMSProvider"/>
 
-        <activity
-                android:name="com.jersuen.im.ui.AccountActivity"
-                android:label="@string/title_activity_account">
-        </activity>
-        <activity android:name="com.jersuen.im.ui.WelcomeActivity">
+        <activity android:name="com.jersuen.im.ui.WelcomeActivity"
+                  android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -47,6 +44,14 @@
         <activity
                 android:name="com.jersuen.im.ui.UserActivity"
                 android:label="@string/title_activity_user">
+        </activity>
+        <activity
+                android:name=".ui.LoginActivity"
+                android:label="@string/title_activity_login">
+        </activity>
+        <activity
+                android:name=".ui.SignActivity"
+                android:label="@string/title_activity_sign">
         </activity>
     </application>
 

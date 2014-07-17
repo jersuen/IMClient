@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--app name-->
     <string name="app_name">IMClient</string>
-    <string name="title_activity_account">登陆</string>
-    <string name="title_activity_welcome">WelcomeActivity</string>
 
-    <!-- fragment_login.xml -->
-
-    <string name="fragment_login_input_account">输入账户</string>
-    <string name="fragment_login_input_password">输入密码</string>
-    <string name="fragment_login_btn_login">登陆</string>
+    <!-- activity_login.xml -->
+    <string name="activity_login_input_account">输入账户</string>
+    <string name="activity_login_input_password">输入密码</string>
+    <string name="activity_login_btn_login">登陆</string>
+    <string name="title_activity_login">登陆</string>
 
     <!-- activity_main.xml -->
     <string name="activity_main_btn_session">会话</string>
     <string name="activity_main_btn_contact">联系人</string>
-    <string name="title_activity_user">UserActivity</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+
+    <!--activity_sign.xml-->
+    <string name="title_activity_sign">注册</string>
+
+
+    <!--activity_user.xml-->
+    <string name="title_activity_user">账户</string>
 
 </resources>

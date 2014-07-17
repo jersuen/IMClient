@@ -25,7 +25,7 @@ public class WelcomeActivity extends Activity {
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                startActivity(new Intent(WelcomeActivity.this, AccountActivity.class));
+                startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
                 WelcomeActivity.this.finish();
             }
         }, 1000);
