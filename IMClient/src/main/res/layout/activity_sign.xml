@@ -4,11 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.jersuen.im.ui.SignActivity">
-    <EditText
-            android:layout_width="match_parent"
+
+    <Button
+            android:id="@+id/activity_sign_next_btn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Name"
-            android:ems="10"
-            android:id="@+id/editText" android:layout_gravity="center_horizontal"/>
+            android:text="下一步"
+            />
+
+    <android.support.v4.view.ViewPager
+            android:id="@+id/activity_sign_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
 </LinearLayout>

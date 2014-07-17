@@ -116,7 +116,7 @@ public class XmppManager extends IXmppManager.Stub {
                         // 通讯录的名称
                         String name = "";
                         // 名称与备注判断
-                        if (userName.equals(remarks)) {
+                        if (userName.equals(remarks) && vCard != null) {
                             // 使用联系人的昵称
                             name = vCard.getNickName();
                         } else {

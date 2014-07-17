@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--app name-->
+    <!-- app name -->
     <string name="app_name">IMClient</string>
 
     <!-- activity_login.xml -->
@@ -14,11 +14,11 @@
     <string name="activity_main_btn_session">会话</string>
     <string name="activity_main_btn_contact">联系人</string>
 
-    <!--activity_sign.xml-->
+    <!-- activity_sign.xml -->
     <string name="title_activity_sign">注册</string>
 
-
-    <!--activity_user.xml-->
+    <!-- activity_user.xml -->
     <string name="title_activity_user">账户</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
