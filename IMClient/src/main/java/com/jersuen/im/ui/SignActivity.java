@@ -24,7 +24,6 @@ import com.jersuen.im.MainActivity;
 import com.jersuen.im.R;
 import com.jersuen.im.ui.adapter.SignViewAdapter;
 import com.jersuen.im.ui.view.RoundedImageView;
-import com.jersuen.im.util.LogUtils;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
@@ -38,7 +37,6 @@ import java.util.Map;
 
 /**
  * 注册
- *
  * @author JerSuen
  */
 public class SignActivity extends Activity implements View.OnClickListener {
@@ -63,7 +61,7 @@ public class SignActivity extends Activity implements View.OnClickListener {
     private View createAccount, perfectAccount, uploadAvatar;
     private AlertDialog dialog;
     private RoundedImageView avatar;
-    private String accountJid, nickNameStr;
+    private String accountJid, accountPassword,accountNickName;
     private XMPPConnection connection;
     private AccountManager accountManager;
     private byte[] avatarBytes;
@@ -78,6 +76,7 @@ public class SignActivity extends Activity implements View.OnClickListener {
                 return true;
             }
         });
+
         createAccount = getLayoutInflater().inflate(R.layout.activity_sign_view_create_account, null);
         uploadAvatar = getLayoutInflater().inflate(R.layout.activity_sign_view_upload_avatar, null);
         perfectAccount = getLayoutInflater().inflate(R.layout.activity_sign_view_perfect_account, null);
@@ -103,7 +102,7 @@ public class SignActivity extends Activity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
             // 创建账户布局监听
             case R.id.activity_sign_view_create_account_commit:
@@ -122,29 +121,24 @@ public class SignActivity extends Activity implements View.OnClickListener {
                     return;
                 }
 
-                // 创建任务
-                new AsyncTask<String, Void, Boolean>() {
+                // 创建账户任务
+                new AsyncTask<String, Void, Boolean>(){
                     private ProgressDialog dialog;
-
                     protected void onPreExecute() {
                         dialog = ProgressDialog.show(SignActivity.this, null, "正在联系服务器...");
                     }
 
-                    protected Boolean doInBackground(String... params) {
+                    protected Boolean doInBackground(String... strings) {
                         connection = ConfigConnection();
                         try {
                             connection.connect();
                             accountManager = AccountManager.getInstance(connection);
                             Map<String, String> map = new HashMap<String, String>();
-                            map.put("name", params[0]);
-                            // 创建账号
-                            accountManager.createAccount(params[0], params[1], map);
-                            // 登陆账号
-                            connection.login(params[0], params[1]);
-                            // 保存账号
+                            map.put("name",strings[0]);
+                            accountManager.createAccount(strings[0], strings[1], map);
+                            connection.login(strings[0], strings[1]);
                             accountJid = StringUtils.parseBareAddress(connection.getUser());
-                            IM.putString(IM.ACCOUNT_JID, accountJid);
-                            IM.putString(IM.ACCOUNT_PASSWORD, params[1]);
+                            accountPassword = strings[1];
                             return true;
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -154,21 +148,20 @@ public class SignActivity extends Activity implements View.OnClickListener {
 
                     protected void onPostExecute(Boolean aBoolean) {
                         dialog.dismiss();
-                        // 创建成功
                         if (aBoolean) {
                             viewPager.setCurrentItem(1);
-                            // 创建失败
                         } else {
-                            Toast.makeText(SignActivity.this, "服务器好像不愿意", Toast.LENGTH_LONG).show();
+                            Toast.makeText(SignActivity.this, "服务器好像不愿意哦", Toast.LENGTH_LONG).show();
                         }
                     }
                 }.execute(accountStr, passwordStr);
+
                 break;
             // 完善资料布局监听
             case R.id.activity_sign_view_perfect_account_commit:
                 TextView nickname = (TextView) perfectAccount.findViewById(R.id.activity_sign_view_perfect_account_nickname);
-                nickNameStr = nickname.getText().toString().trim();
-                if (TextUtils.isEmpty(nickNameStr)) {
+                accountNickName = nickname.getText().toString().trim();
+                if (TextUtils.isEmpty(accountNickName)) {
                     Toast.makeText(SignActivity.this, "昵称不能胡来", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -183,22 +176,20 @@ public class SignActivity extends Activity implements View.OnClickListener {
                 if (avatarBytes == null) {
                     showDialog();
                 } else {
-                    new AsyncTask<VCard, Void, Boolean>(){
+                    // 上传头像，完成注册任务
+                    new AsyncTask<Void, Void, Boolean>(){
                         private ProgressDialog dialog;
                         protected void onPreExecute() {
                             dialog = ProgressDialog.show(SignActivity.this, null, "正在保存账户...");
                         }
-                        protected Boolean doInBackground(VCard... params) {
+
+                        protected Boolean doInBackground(Void... voids) {
                             try {
                                 VCard vCard = new VCard();
-                                vCard.load(connection, IM.getString(IM.ACCOUNT_JID));
-                                vCard.setNickName(nickNameStr);
+                                vCard.load(connection);
+                                vCard.setNickName(accountNickName);
                                 vCard.setAvatar(avatarBytes);
-                                //String encodedImage = StringUtils.encodeBase64(avatarBytes);
-                                //vCard.setAvatar(avatarBytes,encodedImage);
-                                //vCard.setField("PHOTO", "<TYPE>image/jpg</TYPE><BINVAL>" + encodedImage + "</BINVAL>", true);
                                 vCard.save(connection);
-                                IM.saveAvatar(avatarBytes, accountJid);
                                 return true;
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -208,18 +199,26 @@ public class SignActivity extends Activity implements View.OnClickListener {
 
                         protected void onPostExecute(Boolean aBoolean) {
                             dialog.dismiss();
-                            // 完成账户设置
-                            if (aBoolean) {
-                                setResult(RESULT_OK, new Intent().putExtra("data", true));
-                                // 1. 启动后台服务
+                            if(aBoolean) {
+                                // 1. 保存账户
+                                IM.putString(IM.ACCOUNT_JID, accountJid);
+                                IM.putString(IM.ACCOUNT_PASSWORD, accountPassword);
+                                IM.putString(IM.ACCOUNT_NICKNAME, accountNickName);
+                                IM.saveAvatar(avatarBytes, StringUtils.parseName(accountJid));
+
+                                // 2. 启动XMPP后台
                                 startService(new Intent(SignActivity.this, IMService.class));
-                                // 2. 跳转
+                                // 3. 跳转
                                 startActivity(new Intent(SignActivity.this, MainActivity.class));
+                                // 4. 销毁登陆页面
+                                setResult(RESULT_OK);
                                 finish();
                             } else {
-                                Toast.makeText(SignActivity.this, "额,就差这一步了", Toast.LENGTH_LONG).show();
+                                Toast.makeText(SignActivity.this, "额,就差这一步了,再试一次" ,Toast.LENGTH_LONG).show();
                             }
                         }
+
+
                     }.execute();
                 }
                 break;
@@ -276,7 +275,6 @@ public class SignActivity extends Activity implements View.OnClickListener {
                             switch (which) {
                                 case 0:
                                     tempFile = IM.getCameraFile();
-                                    LogUtils.LOGD(SignActivity.class, tempFile.getPath());
                                     // 进入拍照
                                     Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                     intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
@@ -313,24 +311,21 @@ public class SignActivity extends Activity implements View.OnClickListener {
                     .setTitle("确定放弃注册")
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            onBackPressed();
                             try {
                                 // 删除账号，必须要登录注册账号
                                 accountManager.deleteAccount();
-                                IM.putString(IM.ACCOUNT_JID, "");
-                                IM.putString(IM.ACCOUNT_PASSWORD, "");
-                                IM.putString(IM.ACCOUNT_NICKNAME, "");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             // 关闭链接
                             connection.disconnect();
+                            createAccount = null;
+                            connection = null;
                             SignActivity.this.finish();
                         }
                     })
                     .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        }
+                        public void onClick(DialogInterface dialog, int whichButton) {}
                     }).create().show();
         }
     }

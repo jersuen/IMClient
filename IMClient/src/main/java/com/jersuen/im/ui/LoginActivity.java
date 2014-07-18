@@ -136,9 +136,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (data.getBooleanExtra("data", false)) {
-                LoginActivity.this.finish();
-            }
+            LoginActivity.this.finish();
         }
     }
 }
