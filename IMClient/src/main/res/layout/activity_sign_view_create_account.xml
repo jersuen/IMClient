@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.jersuen.im.ui.SignActivity">
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:text="注册账户"
+            android:textSize="35sp"
+            android:gravity="center"
+            />
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPersonName"
+            android:hint="账户"
+            android:ems="10"
+            android:id="@+id/activity_sign_view_create_account_account"
+            android:layout_gravity="center_horizontal"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPassword"
+            android:hint="密码"
+            android:ems="10"
+            android:id="@+id/activity_sign_view_create_account_password"
+            android:layout_gravity="center_horizontal"/>
+
+    <RelativeLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button
+                android:id="@+id/activity_sign_view_create_account_commit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="创建"
+                android:layout_alignParentTop="true" android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+</LinearLayout>

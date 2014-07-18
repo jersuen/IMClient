@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.jersuen.im.ui.SignActivity">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:text="上传头像"
+            android:textSize="35sp"
+            android:gravity="center"
+            />
+
+    <RelativeLayout
+            android:id="@+id/activity_sign_view_upload_avatar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_avatar"
+            >
+
+        <com.jersuen.im.ui.view.RoundedImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/df_avatar"
+                android:scaleType="centerCrop"
+                app:corner_radius="90dp"
+                app:border_width="3dp"
+                app:oval="false"
+                app:border_color="@color/blue_light"
+                android:id="@+id/activity_sign_view_upload_avatar_avatar"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="点击猥琐的你"
+                android:gravity="center"
+                android:background="@drawable/chat_right_normal"
+                android:textColor="@color/green_light"
+                android:textSize="20sp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/activity_sign_view_upload_avatar_avatar"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_marginTop="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button
+                android:id="@+id/activity_sign_view_upload_avatar_commit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="完成"
+                android:textColor="@color/blue_light"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+</LinearLayout>

@@ -13,7 +13,20 @@
           android:showAsAction="always"
           android:title="添加" />
 
+    <!--<item
+            android:checkable="false"
+            android:enabled="false"
+            android:showAsAction="always"/>
+    <item
+            android:checkable="false"
+            android:enabled="false"
+            android:showAsAction="always"/>-->
+
     <item android:id="@+id/action_account"
-          android:showAsAction="always"
+          android:showAsAction="never"
           android:title="账户信息" />
+
+    <item android:id="@+id/action_setting"
+          android:showAsAction="never"
+          android:title="设置" />
 </menu>

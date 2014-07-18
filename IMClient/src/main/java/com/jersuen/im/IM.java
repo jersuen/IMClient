@@ -100,7 +100,7 @@ public class IM extends Application {
         if (bytes != null) {
             if (bytes.length > 0) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                return new BitmapDrawable(im.getResources(), bitmap);
+                return IM.Bitmap2Drawable(bitmap);
             }
         }
         return null;
@@ -158,7 +158,7 @@ public class IM extends Application {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
         // 拍照文件
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/Camera", dateFormat.format(date) + ".jpg");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), dateFormat.format(date) + ".jpg");
     }
 
     /**
@@ -202,5 +202,9 @@ public class IM extends Application {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
+    }
+
+    public static Drawable Bitmap2Drawable(Bitmap bitmap) {
+        return new BitmapDrawable(im.getResources(), bitmap);
     }
 }

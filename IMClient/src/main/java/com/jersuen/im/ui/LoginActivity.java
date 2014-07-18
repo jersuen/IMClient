@@ -43,7 +43,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SignActivity.class));
+            startActivityForResult(new Intent(this, SignActivity.class), RESULT_FIRST_USER);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -131,6 +131,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     }
                 }.execute(inAccount.getText().toString(), inPassword.getText().toString());
                 break;
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (data.getBooleanExtra("data", false)) {
+                LoginActivity.this.finish();
+            }
         }
     }
 }

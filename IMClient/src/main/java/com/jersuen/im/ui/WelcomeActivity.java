@@ -19,7 +19,7 @@ public class WelcomeActivity extends Activity {
         setContentView(R.layout.activity_welcome);
 
         hintView = (SecretTextView) findViewById(R.id.activity_welcome_hint);
-        hintView.setmDuration(1500);
+        hintView.setmDuration(1000);
         hintView.toggle();
 
 
