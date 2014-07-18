@@ -97,33 +97,7 @@ public class SignActivity extends Activity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // 退出注册判断
-            if (TextUtils.isEmpty(accountJid)) {
-                onBackPressed();
-            } else {
-                new AlertDialog.Builder(SignActivity.this, AlertDialog.THEME_HOLO_LIGHT)
-                        .setTitle("确定放弃注册")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                onBackPressed();
-                                try {
-                                    // 删除账号，必须要登录注册账号
-                                    accountManager.deleteAccount();
-                                    IM.putString(IM.ACCOUNT_JID, "");
-                                    IM.putString(IM.ACCOUNT_PASSWORD, "");
-                                    IM.putString(IM.ACCOUNT_NICKNAME, "");
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                // 关闭链接
-                                connection.disconnect();
-                            }
-                        })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            }
-                        }).create().show();
-            }
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -328,5 +302,36 @@ public class SignActivity extends Activity implements View.OnClickListener {
         // 关闭安全模式
         configuration.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
         return new XMPPTCPConnection(configuration);
+    }
+
+    public void onBackPressed() {
+        // 退出注册判断
+        if (TextUtils.isEmpty(accountJid)) {
+            finish();
+        } else {
+            new AlertDialog.Builder(SignActivity.this, AlertDialog.THEME_HOLO_LIGHT)
+                    .setTitle("确定放弃注册")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            onBackPressed();
+                            try {
+                                // 删除账号，必须要登录注册账号
+                                accountManager.deleteAccount();
+                                IM.putString(IM.ACCOUNT_JID, "");
+                                IM.putString(IM.ACCOUNT_PASSWORD, "");
+                                IM.putString(IM.ACCOUNT_NICKNAME, "");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            // 关闭链接
+                            connection.disconnect();
+                            SignActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    }).create().show();
+        }
     }
 }
