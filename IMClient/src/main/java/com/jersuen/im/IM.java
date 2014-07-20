@@ -103,7 +103,7 @@ public class IM extends Application {
                 return IM.Bitmap2Drawable(bitmap);
             }
         }
-        return null;
+        return IM.im.getResources().getDrawable(R.drawable.ic_launcher);
     }
 
     public static boolean saveAvatar(byte[] bytes, String fileName) {

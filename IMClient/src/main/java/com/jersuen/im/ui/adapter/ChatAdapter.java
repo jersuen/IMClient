@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.jersuen.im.IM;
 import com.jersuen.im.R;
+import com.jersuen.im.provider.SMSProvider;
 import com.jersuen.im.provider.SMSProvider.SMSColumns;
 import com.jersuen.im.ui.view.RoundedImageView;
 import org.jivesoftware.smack.util.StringUtils;
@@ -22,10 +23,12 @@ public class ChatAdapter extends CursorAdapter{
 	private final int ITEM_RIGHT = 0;
 	private final int ITEM_LEFT = 1;
 
-	public ChatAdapter(Cursor cursor) {
+    private View.OnClickListener clickListener;
+
+	public ChatAdapter(String account) {
 		super(
 				IM.im,
-				cursor,
+                IM.im.getContentResolver().query(SMSProvider.SMS_URI, null, SMSColumns.SESSION_ID + " = ?", new String[]{account}, null),
 				FLAG_REGISTER_CONTENT_OBSERVER);
 	}
 
@@ -34,14 +37,14 @@ public class ChatAdapter extends CursorAdapter{
         if (view == null) {
             holder = new ViewHolder();
             switch (getItemViewType(position)) {
-                case ITEM_LEFT:
-                    view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_left, null);
-                    break;
                 case ITEM_RIGHT:
                     view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_right, null);
                     break;
+                case ITEM_LEFT:
+                    view = LayoutInflater.from(group.getContext()).inflate(R.layout.activity_chat_item_left, null);
             }
             holder.avatar = (RoundedImageView) view.findViewById(R.id.activity_chat_item_avatar);
+            holder.avatar.setOnClickListener(clickListener);
             holder.content = (TextView) view.findViewById(R.id.activity_chat_item_content);
             view.setTag(holder);
         } else {
@@ -52,13 +55,14 @@ public class ChatAdapter extends CursorAdapter{
 		String bodyStr = cursor.getString(cursor.getColumnIndex(SMSColumns.BODY));
 		String account = cursor.getString(cursor.getColumnIndex(SMSColumns.WHO_ID));
         holder.content.setText(bodyStr);
+        holder.avatar.setTag(account);
         holder.avatar.setImageDrawable(IM.getAvatar(StringUtils.parseName(account)));
 		return view;
 		
 	}
 
     public int getViewTypeCount() {
-		return ITEM_RIGHT + ITEM_LEFT;
+		return 2;
 	}
 
 	public int getItemViewType(int position) {
@@ -79,5 +83,13 @@ public class ChatAdapter extends CursorAdapter{
     private static class ViewHolder {
         TextView content;
         RoundedImageView avatar;
+    }
+
+    /**
+     * 适配器内容监听器
+     * @param clickListener
+     */
+    public void setOnChatViewClickListener(View.OnClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 }

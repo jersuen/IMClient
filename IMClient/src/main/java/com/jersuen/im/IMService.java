@@ -64,4 +64,12 @@ public class IMService extends Service {
         // VCard
         pm.addIQProvider(VCardManager.ELEMENT, VCardManager.NAMESPACE, new VCardProvider());
     }
+
+    public boolean setRosterEntryName(String jid, String rosterEntryName) {
+        return connection.setRosterEntryName(jid, rosterEntryName);
+    }
+
+    public boolean setVCard(String jid, byte[] avatarBytes, String nickName) {
+        return connection.setVCard(jid, avatarBytes, nickName);
+    }
 }

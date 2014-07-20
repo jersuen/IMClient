@@ -19,4 +19,12 @@ public class XmppBinder extends IXmppBinder.Stub{
     public IXmppManager createConnection() throws RemoteException {
         return service.createConnection();
     }
+
+    public boolean setRosterEntryName(String jid, String name) throws RemoteException {
+        return service.setRosterEntryName(jid, name);
+    }
+
+    public boolean setVCard(String jid, byte[] avatarBytes, String nickName) throws RemoteException {
+        return service.setVCard(jid, avatarBytes,nickName);
+    }
 }

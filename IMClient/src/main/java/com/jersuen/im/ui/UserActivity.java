@@ -2,19 +2,31 @@ package com.jersuen.im.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.jersuen.im.IM;
+import com.jersuen.im.IMService;
 import com.jersuen.im.R;
+import com.jersuen.im.service.XmppManager;
+import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.view.RoundedImageView;
+import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.StringUtils;
@@ -41,21 +53,41 @@ public class UserActivity extends Activity implements View.OnClickListener {
     private File tempFile;
     public static final String EXTRA_ID = "account";
     private RoundedImageView avatar;
-    private String account;
-
+    private String account,name,nickname;
+    private EditText inNickName,inName,inAccount;
+    private ServiceConnection serviceConnect = new XMPPServiceConnection();
+    private IXmppBinder binder;
+    private byte[] avatarBytes;
+    private AlertDialog dialog;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
         setContentView(R.layout.activity_user);
-        avatar = (RoundedImageView) findViewById(R.id.activity_user_account_avatar);
+        avatar = (RoundedImageView) findViewById(R.id.activity_user_avatar);
+        // 昵称
+        inNickName = (EditText) findViewById(R.id.activity_user_nickname);
+        // 备注
+        inName = (EditText) findViewById(R.id.activity_user_name);
+        // 账户
+        inAccount = (EditText) findViewById(R.id.activity_user_account);
         account = getIntent().getStringExtra(EXTRA_ID);
+        findViewById(R.id.activity_user_commit).setOnClickListener(this);
+        avatar.setImageDrawable(IM.getAvatar(StringUtils.parseName(account)));
+
         if (!TextUtils.isEmpty(account)) {
             if (account.equals(IM.getString(IM.ACCOUNT_JID))) {
+                // 自己头像监听
                 avatar.setOnClickListener(this);
-                findViewById(R.id.activity_user_account_layout).setOnClickListener(this);
-                avatar.setImageDrawable(IM.getAvatar(StringUtils.parseName(account)));
+                findViewById(R.id.activity_user_avatar_layout).setOnClickListener(this);
+                // 自己没有备注
+                findViewById(R.id.activity_user_name_layout).setVisibility(View.GONE);
+            } else {
+                // 好友不可以修改自己昵称
+                inNickName.setFocusable(false);
             }
         }
+        inAccount.setText(account);
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -70,30 +102,46 @@ public class UserActivity extends Activity implements View.OnClickListener {
 
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.activity_user_account_avatar:
-            case R.id.activity_user_account_layout:
-                new AlertDialog.Builder(this)
-                        .setTitle("选择照片")
-                        .setItems(R.array.select_photo_items, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case 0:
-                                        tempFile = IM.getCameraFile();
-                                        // 进入拍照
-                                        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                        intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-                                        startActivityForResult(intentCamera, cameraCode);
-                                        break;
-                                    case 1:
-                                        // 浏览图库
-                                        Intent intentSelect = new Intent();
-                                        intentSelect.setType("image/*");
-                                        intentSelect.setAction(Intent.ACTION_GET_CONTENT);
-                                        startActivityForResult(intentSelect, selectCode);
-                                        break;
-                                }
-                            }
-                        }).create().show();
+            // 头像事件
+            case R.id.activity_user_avatar:
+            case R.id.activity_user_avatar_layout:
+                showDialog();
+                break;
+            // 修改事件
+            case R.id.activity_user_commit:
+                if (IM.getString(IM.ACCOUNT_JID).equals(account)) {
+                    nickname = inNickName.getText().toString().trim();
+                    if (TextUtils.isEmpty(nickname)) {
+                        return;
+                    }
+                    // 修改自己的名片
+                    boolean result;
+                    try {
+                        if (avatarBytes == null) {
+                            result = binder.setVCard(account, null, nickname);
+                        } else {
+                            result = binder.setVCard(account, avatarBytes, nickname);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result = false;
+                    }
+                    Toast.makeText(UserActivity.this, (result) ? "修改名片成功" : "修改名片失败", Toast.LENGTH_LONG).show();
+                } else {
+                    name = inName.getText().toString().trim();
+                    if (TextUtils.isEmpty(name)) {
+                        return;
+                    }
+                    // 修改好友的备注
+                    boolean result;
+                    try {
+                        result = binder.setRosterEntryName(account, name);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        result = false;
+                    }
+                    Toast.makeText(UserActivity.this, (result) ? "修改备注成功" : "修改备注失败", Toast.LENGTH_LONG).show();
+                }
                 break;
         }
     }
@@ -131,22 +179,62 @@ public class UserActivity extends Activity implements View.OnClickListener {
                 if (data != null) {
                     Bitmap photoPic = data.getParcelableExtra("data");
                     if (photoPic != null) {
-                        String encodedImage = StringUtils.encodeBase64(IM.Bitmap2Bytes(photoPic));
-                        VCard me = new VCard();
-                        try {
-                            me.load(null);
-                            me.setAvatar(IM.Bitmap2Bytes(photoPic),encodedImage);
-                            me.save(null);
-                        } catch (SmackException.NoResponseException e) {
-                            e.printStackTrace();
-                        } catch (XMPPException.XMPPErrorException e) {
-                            e.printStackTrace();
-                        } catch (SmackException.NotConnectedException e) {
-                            e.printStackTrace();
-                        }
+                        avatar.setImageDrawable(IM.Bitmap2Drawable(photoPic));
+                        avatarBytes = IM.Bitmap2Bytes(photoPic);
                     }
                 }
                 break;
         }
+    }
+
+
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, IMService.class), serviceConnect, BIND_AUTO_CREATE);
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnect);
+    }
+
+    /**连接服务*/
+    private class XMPPServiceConnection implements ServiceConnection {
+
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            binder = IXmppBinder.Stub.asInterface(iBinder);
+        }
+
+        public void onServiceDisconnected(ComponentName componentName) {
+            binder = null;
+        }
+    }
+
+    private void showDialog() {
+        if (dialog == null) {
+            dialog = new AlertDialog.Builder(this)
+                    .setTitle("选择照片")
+                    .setItems(R.array.select_photo_items, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 0:
+                                    tempFile = IM.getCameraFile();
+                                    // 进入拍照
+                                    Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+                                    startActivityForResult(intentCamera, cameraCode);
+                                    break;
+                                case 1:
+                                    // 浏览图库
+                                    Intent intentSelect = new Intent();
+                                    intentSelect.setType("image/*");
+                                    intentSelect.setAction(Intent.ACTION_GET_CONTENT);
+                                    startActivityForResult(intentSelect, selectCode);
+                                    break;
+                            }
+                        }
+                    }).create();
+        }
+       dialog.show();
     }
 }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import com.jersuen.im.IM;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
@@ -18,6 +19,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.IOException;
@@ -163,6 +165,10 @@ public class XmppManager extends IXmppManager.Stub {
         return true;
     }
 
+    public XMPPConnection getConnection() {
+        return connection;
+    }
+
     /**发送消息*/
     public void sendMessage(String sessionJID, String sessionName, String message, String type) throws RemoteException {
         ChatManager chatManager = ChatManager.getInstanceFor(connection);
@@ -201,6 +207,34 @@ public class XmppManager extends IXmppManager.Stub {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**设置联系人备注*/
+    public boolean setRosterEntryName(String jid, String name) {
+        try {
+            connection.getRoster().getEntry(jid).setName(name);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean setVCard(String jid, byte[] avatarBytes, String nickName) {
+        VCard vCard = new VCard();
+        try {
+            vCard.load(connection, jid);
+            if (TextUtils.isEmpty(nickName)) {
+                vCard.setNickName(nickName);
+            }
+            if (avatarBytes != null) {
+                vCard.setAvatar(avatarBytes);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

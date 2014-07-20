@@ -57,18 +57,18 @@ public class ChatActivity extends FragmentActivity implements OnClickListener {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         }
-
-		cursor = getContentResolver().query(SMSProvider.SMS_URI, null, SMSColumns.SESSION_ID + " = ?", new String[]{contact.account}, null);
-		
 		// 装配适配器
-		adapter = new ChatAdapter(cursor);
+		adapter = new ChatAdapter(contact.account);
+        // 给适配器设置监听器
+        adapter.setOnChatViewClickListener(this);
 		listView.setAdapter(adapter);
 
 		// 内容观察者
 		co = new ContentObserver(new Handler()) {
 			public void onChange(boolean selfChange) {
 				Cursor cursor = getContentResolver().query(SMSProvider.SMS_URI, null, SMSColumns.SESSION_ID + " = ?", new String[]{contact.account}, null);
-				adapter.changeCursor(cursor);
+				//adapter.changeCursor(cursor);
+                adapter.swapCursor(cursor);
 			}
 		};
 		
@@ -77,16 +77,23 @@ public class ChatActivity extends FragmentActivity implements OnClickListener {
 	}
 
 	public void onClick(View v) {
-		String bodyStr = input.getText().toString();
-		if (!TextUtils.isEmpty(bodyStr)) {
-            try {
-                binder.createConnection().sendMessage(contact.account, contact.name, bodyStr, "chat");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            // 清空输入框
-            input.setText(null);
-		}
+        switch (v.getId()) {
+            case R.id.activity_chat_send_btn:
+                String bodyStr = input.getText().toString();
+                if (!TextUtils.isEmpty(bodyStr)) {
+                    try {
+                        binder.createConnection().sendMessage(contact.account, contact.name, bodyStr, "chat");
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    // 清空输入框
+                    input.setText(null);
+                }
+                break;
+            case R.id.activity_chat_item_avatar:
+                startActivity(new Intent(ChatActivity.this, UserActivity.class).putExtra(UserActivity.EXTRA_ID, v.getTag().toString()));
+                break;
+        }
 	}
 
 	/** XMPP连接服务 */
