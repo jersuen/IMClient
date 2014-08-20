@@ -108,30 +108,20 @@ public class XmppManager extends IXmppManager.Stub {
                 if (roster != null && roster.getEntries().size() > 0) {
                     Uri uri = null;
                     for (RosterEntry entry : roster.getEntries()) {
+                        LogUtils.LOGD(XmppManager.class, "name: " + entry.getName());
+                        LogUtils.LOGD(XmppManager.class, "user: " + entry.getUser());
+                        // 用户备注
+                        String remarks = entry.getName();
                         // 获取联系人名片信息
                         VCard vCard = new VCard();
                         vCard.load(connection, entry.getUser());
-                        // 用户名称
-                        String userName = StringUtils.parseName(entry.getUser());
-                        // 用户备注
-                        String remarks = entry.getName();
-                        // 通讯录的名称
-                        String name = "";
-                        // 名称与备注判断
-                        if (userName.equals(remarks) && vCard != null) {
-                            // 使用联系人的昵称
-                            name = vCard.getNickName();
-                        } else {
-                            // 使用备注
-                            name = remarks;
-                        }
                         if (vCard != null) {
                             IM.saveAvatar(vCard.getAvatar(), StringUtils.parseName(entry.getUser()));
                         }
                         ContentValues values = new ContentValues();
                         values.put(ContactsProvider.ContactColumns.ACCOUNT, entry.getUser());
-                        values.put(ContactsProvider.ContactColumns.NAME, name);
-                        String sortStr =  PinYin.getPinYin(name);
+                        values.put(ContactsProvider.ContactColumns.NAME, remarks);
+                        String sortStr =  PinYin.getPinYin(remarks);
                         values.put(ContactsProvider.ContactColumns.SORT, sortStr);
                         values.put(ContactsProvider.ContactColumns.SECTION, sortStr.substring(0,1).toUpperCase(Locale.ENGLISH));
                         // 储存联系人
@@ -220,21 +210,30 @@ public class XmppManager extends IXmppManager.Stub {
         return false;
     }
 
-    public boolean setVCard(String jid, byte[] avatarBytes, String nickName) {
+    public boolean setVCard(byte[] avatarBytes, String nickName) {
         VCard vCard = new VCard();
         try {
-            vCard.load(connection, jid);
-            if (TextUtils.isEmpty(nickName)) {
+            // 加载自己的VCard
+            vCard.load(connection);
+            // 设置昵称
+            if (!TextUtils.isEmpty(nickName)) {
                 vCard.setNickName(nickName);
             }
+            // 设置头像
             if (avatarBytes != null) {
                 vCard.setAvatar(avatarBytes);
             }
+            // 保存
+            vCard.save(connection);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public IXmppManager getConnect() throws RemoteException {
+        return this;
     }
 
     /**

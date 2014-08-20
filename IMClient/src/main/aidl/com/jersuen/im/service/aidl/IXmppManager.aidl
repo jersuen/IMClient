@@ -18,5 +18,7 @@ interface IXmppManager {
         boolean setRosterEntryName(String jid, String name);
 
         /**设置名片信息*/
-        boolean setVCard(String jid, in byte[] avatarBytes, String nickName);
+        boolean setVCard(in byte[] avatarBytes, String nickName);
+
+        IXmppManager getConnect();
 }

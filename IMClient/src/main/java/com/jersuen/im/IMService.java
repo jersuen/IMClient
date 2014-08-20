@@ -69,7 +69,7 @@ public class IMService extends Service {
         return connection.setRosterEntryName(jid, rosterEntryName);
     }
 
-    public boolean setVCard(String jid, byte[] avatarBytes, String nickName) {
-        return connection.setVCard(jid, avatarBytes, nickName);
+    public boolean setVCard(byte[] avatarBytes, String nickName) {
+        return connection.setVCard(avatarBytes, nickName);
     }
 }

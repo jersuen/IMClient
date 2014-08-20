@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.jersuen.im.IM;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
+import com.jersuen.im.provider.ContactsProvider;
+import com.jersuen.im.provider.SMSProvider;
 import com.jersuen.im.service.XmppManager;
 import com.jersuen.im.service.aidl.IXmppBinder;
 import com.jersuen.im.service.aidl.IXmppManager;
@@ -59,6 +61,7 @@ public class UserActivity extends Activity implements View.OnClickListener {
     private IXmppBinder binder;
     private byte[] avatarBytes;
     private AlertDialog dialog;
+    private boolean isMe;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
@@ -81,13 +84,20 @@ public class UserActivity extends Activity implements View.OnClickListener {
                 findViewById(R.id.activity_user_avatar_layout).setOnClickListener(this);
                 // 自己没有备注
                 findViewById(R.id.activity_user_name_layout).setVisibility(View.GONE);
+                inNickName.setText(IM.getString(IM.ACCOUNT_NICKNAME));
+                isMe = true;
             } else {
-                // 好友不可以修改自己昵称
+                // 不可以修改好友昵称
                 inNickName.setFocusable(false);
+                Cursor cursor = getContentResolver().query(ContactsProvider.CONTACT_URI, null, ContactsProvider.ContactColumns.ACCOUNT + " = ?", new String[]{account}, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsProvider.ContactColumns.NAME));
+                    inName.setText(name);
+                }
+                isMe = false;
             }
         }
         inAccount.setText(account);
-
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -109,7 +119,7 @@ public class UserActivity extends Activity implements View.OnClickListener {
                 break;
             // 修改事件
             case R.id.activity_user_commit:
-                if (IM.getString(IM.ACCOUNT_JID).equals(account)) {
+                if (isMe) {
                     nickname = inNickName.getText().toString().trim();
                     if (TextUtils.isEmpty(nickname)) {
                         return;
@@ -118,9 +128,9 @@ public class UserActivity extends Activity implements View.OnClickListener {
                     boolean result;
                     try {
                         if (avatarBytes == null) {
-                            result = binder.setVCard(account, null, nickname);
+                            result = binder.setVCard(null, nickname);
                         } else {
-                            result = binder.setVCard(account, avatarBytes, nickname);
+                            result = binder.setVCard(avatarBytes, nickname);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -203,6 +213,16 @@ public class UserActivity extends Activity implements View.OnClickListener {
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             binder = IXmppBinder.Stub.asInterface(iBinder);
+            if (!isMe) {
+                try {
+                    String nickName = binder.getNickName(account);
+                    if (!TextUtils.isEmpty(nickName)) {
+                        inNickName.setText(nickName);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         public void onServiceDisconnected(ComponentName componentName) {
