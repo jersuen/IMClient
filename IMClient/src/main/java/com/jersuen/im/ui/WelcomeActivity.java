@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.animation.AnimationUtils;
 import com.jersuen.im.R;
 import com.jersuen.im.ui.view.SecretTextView;
 
@@ -12,16 +13,15 @@ import com.jersuen.im.ui.view.SecretTextView;
  * @author JerSuen
  */
 public class WelcomeActivity extends Activity {
-
     private SecretTextView hintView;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
         hintView = (SecretTextView) findViewById(R.id.activity_welcome_hint);
-        hintView.setmDuration(1000);
+        findViewById(R.id.activity_welcome_hint).startAnimation(AnimationUtils.loadAnimation(this, R.anim.welcome_hint_bottom_in));
+        hintView.setmDuration(1500);
         hintView.toggle();
-
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
