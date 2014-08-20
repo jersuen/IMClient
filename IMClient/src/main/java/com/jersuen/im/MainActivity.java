@@ -61,6 +61,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
+            // 发送home action
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);// 注意
             intent.addCategory(Intent.CATEGORY_HOME);
