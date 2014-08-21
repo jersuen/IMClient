@@ -20,7 +20,10 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.offline.OfflineMessageManager;
+import org.jivesoftware.smackx.search.ReportedData;
+import org.jivesoftware.smackx.search.UserSearchManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jivesoftware.smackx.xdata.Form;
 
 import java.io.IOException;
 import java.util.*;
@@ -230,6 +233,26 @@ public class XmppManager extends IXmppManager.Stub {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**搜索账户*/
+    public String searchAccount(String accountName) throws RemoteException {
+        try {
+            UserSearchManager search = new UserSearchManager(getConnection());
+            Form searchForm = search.getSearchForm(getConnection().getServiceName());
+            Form answerForm = searchForm.createAnswerForm();
+            answerForm.setAnswer("userAccount", true);
+            answerForm.setAnswer("userPhote", accountName);
+            ReportedData data = search.getSearchResults(answerForm,"");
+
+        } catch (SmackException.NoResponseException e) {
+            e.printStackTrace();
+        } catch (XMPPException.XMPPErrorException e) {
+            e.printStackTrace();
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public IXmppManager getConnect() throws RemoteException {

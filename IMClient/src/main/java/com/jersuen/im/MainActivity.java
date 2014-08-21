@@ -12,6 +12,7 @@ import android.view.*;
 import android.widget.Toast;
 import com.jersuen.im.service.LoginAsyncTask;
 import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.ui.AddActivity;
 import com.jersuen.im.ui.UserActivity;
 import com.jersuen.im.ui.adapter.FragmentAdapter;
 import com.jersuen.im.ui.view.PageIndicator;
@@ -78,7 +79,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_search:
+                return true;
             case R.id.action_add:
+                startActivity(new Intent(this, AddActivity.class));
                 return true;
             case R.id.action_account:
                 startActivity(new Intent(this, UserActivity.class).putExtra(UserActivity.EXTRA_ID, IM.getString(IM.ACCOUNT_JID)));

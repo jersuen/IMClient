@@ -20,5 +20,8 @@ interface IXmppManager {
         /**设置名片信息*/
         boolean setVCard(in byte[] avatarBytes, String nickName);
 
+        /**搜索账户*/
+        String searchAccount(String accountName);
+
         IXmppManager getConnect();
 }
