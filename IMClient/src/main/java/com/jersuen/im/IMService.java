@@ -4,13 +4,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
-import com.jersuen.im.service.XmppBinder;
 import com.jersuen.im.service.XmppManager;
-import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.service.aidl.IXmppManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 
 /**
@@ -21,13 +19,17 @@ public class IMService extends Service {
 
     private XmppManager connection;
     private ConnectionConfiguration connectionConfig;
-    private IXmppBinder.Stub binder;
+    private IXmppManager.Stub binder;
+
     public void onCreate() {
         super.onCreate();
         configureProviderManager(ProviderManager.getInstance());
-        binder = new XmppBinder(this);
+        binder = createConnection();
     }
 
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             createConnection().connect();
@@ -35,10 +37,6 @@ public class IMService extends Service {
             e.printStackTrace();
         }
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    public IBinder onBind(Intent intent) {
-        return binder;
     }
 
     /**初始化ConnectionConfiguration*/
@@ -63,13 +61,5 @@ public class IMService extends Service {
     public void configureProviderManager (ProviderManager pm){
         // VCard
         pm.addIQProvider(VCardManager.ELEMENT, VCardManager.NAMESPACE, new VCardProvider());
-    }
-
-    public boolean setRosterEntryName(String jid, String rosterEntryName) {
-        return connection.setRosterEntryName(jid, rosterEntryName);
-    }
-
-    public boolean setVCard(byte[] avatarBytes, String nickName) {
-        return connection.setVCard(avatarBytes, nickName);
     }
 }

@@ -25,7 +25,6 @@ import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.provider.SMSProvider;
 import com.jersuen.im.service.XmppManager;
-import com.jersuen.im.service.aidl.IXmppBinder;
 import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.view.RoundedImageView;
 import org.jivesoftware.smack.Roster;
@@ -58,7 +57,7 @@ public class UserActivity extends Activity implements View.OnClickListener {
     private String account,name,nickname;
     private EditText inNickName,inName,inAccount;
     private ServiceConnection serviceConnect = new XMPPServiceConnection();
-    private IXmppBinder binder;
+    private IXmppManager xmppManager;
     private byte[] avatarBytes;
     private AlertDialog dialog;
     private boolean isMe;
@@ -128,9 +127,9 @@ public class UserActivity extends Activity implements View.OnClickListener {
                     boolean result;
                     try {
                         if (avatarBytes == null) {
-                            result = binder.setVCard(null, nickname);
+                            result = xmppManager.setVCard(null, nickname);
                         } else {
-                            result = binder.setVCard(avatarBytes, nickname);
+                            result = xmppManager.setVCard(avatarBytes, nickname);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -145,7 +144,7 @@ public class UserActivity extends Activity implements View.OnClickListener {
                     // 修改好友的备注
                     boolean result;
                     try {
-                        result = binder.setRosterEntryName(account, name);
+                        result = xmppManager.setRosterEntryName(account, name);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                         result = false;
@@ -212,10 +211,10 @@ public class UserActivity extends Activity implements View.OnClickListener {
     private class XMPPServiceConnection implements ServiceConnection {
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            binder = IXmppBinder.Stub.asInterface(iBinder);
+            xmppManager = IXmppManager.Stub.asInterface(iBinder);
             if (!isMe) {
                 try {
-                    String nickName = binder.getNickName(account);
+                    String nickName = xmppManager.getNickName(account);
                     if (!TextUtils.isEmpty(nickName)) {
                         inNickName.setText(nickName);
                     }
@@ -226,7 +225,7 @@ public class UserActivity extends Activity implements View.OnClickListener {
         }
 
         public void onServiceDisconnected(ComponentName componentName) {
-            binder = null;
+            xmppManager = null;
         }
     }
 

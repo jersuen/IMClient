@@ -1,4 +1,4 @@
-package com.jersuen.im.service;
+package com.jersuen.im.service.aidl;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,7 +11,6 @@ public class Contact implements Parcelable{
 	
 	public String avatar,account,name,sort,index;
 
-	
 	public static final Creator<Contact> CREATOR = new Creator<Contact>() {
 
 		public Contact createFromParcel(Parcel source) {

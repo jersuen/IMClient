@@ -4,22 +4,28 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
-import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.service.aidl.Contact;
+import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.adapter.AddViewAdapter;
-import org.jivesoftware.smackx.search.UserSearchManager;
-import org.jivesoftware.smackx.xdata.Form;
+import com.jersuen.im.ui.view.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +39,7 @@ public class AddActivity extends Activity implements View.OnClickListener {
     private View searchView,examineView;
     private AddViewAdapter adapter;
     private ServiceConnection serviceConnect = new XMPPServiceConnection();
-    private IXmppBinder binder;
+    private IXmppManager xmppManager;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setHomeButtonEnabled(true);
@@ -72,10 +78,37 @@ public class AddActivity extends Activity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.activity_add_view_search_account_commit:
                 String accountStr = ((EditText)searchView.findViewById(R.id.activity_add_view_search_account_input)).getText().toString().trim();
-                if (TextUtils.isEmpty(accountStr) || binder == null) {
+                if (TextUtils.isEmpty(accountStr) || xmppManager == null) {
                     return;
                 }
-                //UserSearchManager search = new UserSearchManager(null);
+                try {
+                    String jidStr = xmppManager.searchAccount(accountStr);
+                    if (!TextUtils.isEmpty(jidStr)) {
+                        viewPager.setCurrentItem(1);
+                        Contact contact = xmppManager.getContact(jidStr);
+                        byte[]  bytes = contact.avatar.getBytes();
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+
+                        examineView.findViewById(R.id.activity_user_name_layout).setVisibility(View.GONE);
+                        examineView.findViewById(R.id.activity_user_commit).setVisibility(View.GONE);
+
+                        TextView account = (TextView) examineView.findViewById(R.id.activity_user_account);
+                        account.setText(contact.account);
+                        account.setFocusable(false);
+
+                        TextView name = (TextView) examineView.findViewById(R.id.activity_user_nickname);
+                        name.setText(contact.name);
+                        name.setFocusable(false);
+
+                        RoundedImageView avatar = (RoundedImageView) examineView.findViewById(R.id.activity_user_avatar);
+                        avatar.setImageDrawable(drawable);
+                    } else {
+                        Toast.makeText(AddActivity.this, "没有此用户", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.activity_add_view_examine_account_commit:
                 break;
@@ -85,11 +118,11 @@ public class AddActivity extends Activity implements View.OnClickListener {
     private class XMPPServiceConnection implements ServiceConnection {
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            binder = IXmppBinder.Stub.asInterface(iBinder);
+            xmppManager = IXmppManager.Stub.asInterface(iBinder);
         }
 
         public void onServiceDisconnected(ComponentName componentName) {
-            binder = null;
+            xmppManager = null;
         }
     }
 

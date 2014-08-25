@@ -23,8 +23,8 @@ import com.jersuen.im.IMService;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.SMSProvider;
 import com.jersuen.im.provider.SMSProvider.SMSColumns;
-import com.jersuen.im.service.Contact;
-import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.service.aidl.Contact;
+import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.adapter.ChatAdapter;
 
 /**
@@ -37,10 +37,10 @@ public class ChatActivity extends FragmentActivity implements OnClickListener {
 	private ListView listView;
 	private EditText input;
 	private ServiceConnection serviceConnect = new XmppServiceConnect();
-	private IXmppBinder binder;
 	private ChatAdapter adapter;
 	private ContentObserver co;
 	private Cursor cursor;
+    private IXmppManager xmppManager;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
@@ -82,7 +82,7 @@ public class ChatActivity extends FragmentActivity implements OnClickListener {
                 String bodyStr = input.getText().toString();
                 if (!TextUtils.isEmpty(bodyStr)) {
                     try {
-                        binder.createConnection().sendMessage(contact.account, contact.name, bodyStr, "chat");
+                        xmppManager.sendMessage(contact.account, contact.name, bodyStr, "chat");
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -99,11 +99,11 @@ public class ChatActivity extends FragmentActivity implements OnClickListener {
 	/** XMPP连接服务 */
 	private class XmppServiceConnect implements ServiceConnection {
 		public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-			binder = IXmppBinder.Stub.asInterface(iBinder);
+            xmppManager = IXmppManager.Stub.asInterface(iBinder);
 		}
 
 		public void onServiceDisconnected(ComponentName componentName) {
-			binder = null;
+			xmppManager = null;
 		}
 	}
 

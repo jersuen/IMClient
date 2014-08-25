@@ -1,5 +1,7 @@
 package com.jersuen.im.service.aidl;
 
+import com.jersuen.im.service.aidl.Contact;
+
 interface IXmppManager {
 
         /**建立连接*/
@@ -23,5 +25,9 @@ interface IXmppManager {
         /**搜索账户*/
         String searchAccount(String accountName);
 
-        IXmppManager getConnect();
+        /**获取昵称*/
+        String getNickName(String jid);
+
+        /**获取联系人*/
+        Contact getContact(String jid);
 }

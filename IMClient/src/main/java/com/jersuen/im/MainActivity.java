@@ -11,7 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.view.*;
 import android.widget.Toast;
 import com.jersuen.im.service.LoginAsyncTask;
-import com.jersuen.im.service.aidl.IXmppBinder;
+import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.AddActivity;
 import com.jersuen.im.ui.UserActivity;
 import com.jersuen.im.ui.adapter.FragmentAdapter;
@@ -31,7 +31,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private PageIndicator indicator;
     private FragmentPagerAdapter adapter;
     private ServiceConnection serviceConnect = new LoginServiceConnect();
-    private IXmppBinder binder;
+    private IXmppManager xmppManager;
     private LoginAsyncTask loginTask = new LoginTask();
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,12 +122,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private class LoginServiceConnect implements ServiceConnection {
 
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            binder = IXmppBinder.Stub.asInterface(iBinder);
-            loginTask.execute(binder);
+            xmppManager = IXmppManager.Stub.asInterface(iBinder);
+            loginTask.execute(xmppManager);
         }
 
         public void onServiceDisconnected(ComponentName componentName) {
-            binder = null;
+            xmppManager = null;
         }
     }
 

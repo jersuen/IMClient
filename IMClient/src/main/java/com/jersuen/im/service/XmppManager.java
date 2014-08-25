@@ -10,6 +10,7 @@ import com.jersuen.im.IMService;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.provider.SMSProvider;
+import com.jersuen.im.service.aidl.Contact;
 import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.util.LogUtils;
 import com.jersuen.im.util.PinYin;
@@ -19,11 +20,11 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.UserSearchManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
+import org.jivesoftware.smackx.xdata.FormField;
 
 import java.io.IOException;
 import java.util.*;
@@ -102,6 +103,7 @@ public class XmppManager extends IXmppManager.Stub {
                 // 添加消息监听器
                 connection.addPacketListener(messageListener, new PacketTypeFilter(Message.class));
                 Roster roster = connection.getRoster();
+                Presence presence = roster.getPresence("jid");
                 if (rosterListener == null) {
                     rosterListener = new IMClientRosterListener();
                 }
@@ -235,16 +237,29 @@ public class XmppManager extends IXmppManager.Stub {
         return false;
     }
 
-    /**搜索账户*/
+    /**搜索账户 XEP-0055*/
     public String searchAccount(String accountName) throws RemoteException {
+
+        LogUtils.LOGD(XmppManager.class, "search：" + accountName);
         try {
             UserSearchManager search = new UserSearchManager(getConnection());
-            Form searchForm = search.getSearchForm(getConnection().getServiceName());
+            Form searchForm = search.getSearchForm("search." + getConnection().getServiceName());
+            for (FormField field : searchForm.getFields()) {
+                LogUtils.LOGD(XmppManager.class, "Label：" + field.getLabel());
+                LogUtils.LOGD(XmppManager.class, "Description：" + field.getDescription());
+                LogUtils.LOGD(XmppManager.class, "Type：" + field.getType());
+                LogUtils.LOGD(XmppManager.class, "Variable：" + field.getVariable());
+            }
+            // 创建新表单
             Form answerForm = searchForm.createAnswerForm();
-            answerForm.setAnswer("userAccount", true);
-            answerForm.setAnswer("userPhote", accountName);
-            ReportedData data = search.getSearchResults(answerForm,"");
-
+            answerForm.setAnswer("search", accountName);
+            answerForm.setAnswer("Username", true);
+            ReportedData data = search.getSearchResults(answerForm, "search." + getConnection().getServiceName());
+            String jidStr = null;
+            for (ReportedData.Row row : data.getRows()) {
+                jidStr = row.getValues("jid").get(0);
+            }
+            return jidStr;
         } catch (SmackException.NoResponseException e) {
             e.printStackTrace();
         } catch (XMPPException.XMPPErrorException e) {
@@ -255,9 +270,44 @@ public class XmppManager extends IXmppManager.Stub {
         return null;
     }
 
-    public IXmppManager getConnect() throws RemoteException {
-        return this;
+    public String getNickName(String jid) throws RemoteException {
+        if (!TextUtils.isEmpty(jid)) {
+            VCard vCard = new VCard();
+            try {
+                vCard.load(getConnection(), jid);
+                return vCard.getNickName();
+            } catch (SmackException.NoResponseException e) {
+                e.printStackTrace();
+            } catch (XMPPException.XMPPErrorException e) {
+                e.printStackTrace();
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
+
+    public Contact getContact(String jid) throws RemoteException {
+        if (!TextUtils.isEmpty(jid)) {
+            VCard vCard = new VCard();
+            try {
+                vCard.load(getConnection(), jid);
+                Contact contact = new Contact();
+                contact.account = jid;
+                contact.name = vCard.getNickName();
+                contact.avatar = vCard.getAvatar().toString();
+                return contact;
+            } catch (SmackException.NoResponseException e) {
+                e.printStackTrace();
+            } catch (XMPPException.XMPPErrorException e) {
+                e.printStackTrace();
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
     /**
      * XMPP连接监听器

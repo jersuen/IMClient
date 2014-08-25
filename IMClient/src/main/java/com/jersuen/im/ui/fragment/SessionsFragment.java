@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.SMSProvider;
-import com.jersuen.im.service.Contact;
+import com.jersuen.im.service.aidl.Contact;
 import com.jersuen.im.ui.ChatActivity;
 import com.jersuen.im.ui.adapter.SessionsAdapter;
 

@@ -8,14 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jersuen.im.IM;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.provider.ContactsProvider.ContactColumns;
-import com.jersuen.im.service.Contact;
+import com.jersuen.im.service.aidl.Contact;
 import com.jersuen.im.ui.view.PinnedSectionListView.PinnedSectionListAdapter;
 import com.jersuen.im.ui.view.RoundedImageView;
 import org.jivesoftware.smack.util.StringUtils;
