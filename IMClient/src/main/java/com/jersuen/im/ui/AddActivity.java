@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.jersuen.im.IMService;
@@ -26,6 +25,7 @@ import com.jersuen.im.service.aidl.Contact;
 import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.adapter.AddViewAdapter;
 import com.jersuen.im.ui.view.RoundedImageView;
+import org.jivesoftware.smack.util.Base64;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,8 +85,8 @@ public class AddActivity extends Activity implements View.OnClickListener {
                     String jidStr = xmppManager.searchAccount(accountStr);
                     if (!TextUtils.isEmpty(jidStr)) {
                         viewPager.setCurrentItem(1);
-                        Contact contact = xmppManager.getContact(jidStr);
-                        byte[]  bytes = contact.avatar.getBytes();
+                        Contact contact = xmppManager.getVCard(jidStr);
+                        byte[] bytes = Base64.decode(contact.avatar);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         Drawable drawable = new BitmapDrawable(getResources(), bitmap);
 

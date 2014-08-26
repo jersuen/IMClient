@@ -17,21 +17,16 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.jersuen.im.IM;
 import com.jersuen.im.IMService;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
-import com.jersuen.im.provider.SMSProvider;
-import com.jersuen.im.service.XmppManager;
+import com.jersuen.im.service.aidl.Contact;
 import com.jersuen.im.service.aidl.IXmppManager;
 import com.jersuen.im.ui.view.RoundedImageView;
-import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.util.Base64;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.File;
 
@@ -91,6 +86,7 @@ public class UserActivity extends Activity implements View.OnClickListener {
                 Cursor cursor = getContentResolver().query(ContactsProvider.CONTACT_URI, null, ContactsProvider.ContactColumns.ACCOUNT + " = ?", new String[]{account}, null);
                 if (cursor != null && cursor.moveToFirst()) {
                     String name = cursor.getString(cursor.getColumnIndex(ContactsProvider.ContactColumns.NAME));
+                    // 设置通讯录里的备注
                     inName.setText(name);
                 }
                 isMe = false;
@@ -125,16 +121,19 @@ public class UserActivity extends Activity implements View.OnClickListener {
                     }
                     // 修改自己的名片
                     boolean result;
+                    Contact contact = new Contact();
+                    contact.name = nickname;
+                    if (avatarBytes == null) {
+                        contact.avatar = Base64.encodeBytes(avatarBytes);
+                    }
+
                     try {
-                        if (avatarBytes == null) {
-                            result = xmppManager.setVCard(null, nickname);
-                        } else {
-                            result = xmppManager.setVCard(avatarBytes, nickname);
-                        }
-                    } catch (Exception e) {
+                        result = xmppManager.setVCard(contact);
+                    } catch (RemoteException e) {
                         e.printStackTrace();
                         result = false;
                     }
+
                     Toast.makeText(UserActivity.this, (result) ? "修改名片成功" : "修改名片失败", Toast.LENGTH_LONG).show();
                 } else {
                     name = inName.getText().toString().trim();
@@ -214,9 +213,12 @@ public class UserActivity extends Activity implements View.OnClickListener {
             xmppManager = IXmppManager.Stub.asInterface(iBinder);
             if (!isMe) {
                 try {
-                    String nickName = xmppManager.getNickName(account);
-                    if (!TextUtils.isEmpty(nickName)) {
-                        inNickName.setText(nickName);
+                    Contact contact = xmppManager.getVCard(account);
+                    if (contact != null) {
+                        String nickName = contact.name;
+                        if (!TextUtils.isEmpty(nickName)) {
+                            inNickName.setText(nickName);
+                        }
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();

@@ -20,14 +20,11 @@ interface IXmppManager {
         boolean setRosterEntryName(String jid, String name);
 
         /**设置名片信息*/
-        boolean setVCard(in byte[] avatarBytes, String nickName);
+        boolean setVCard(in Contact contact);
 
         /**搜索账户*/
         String searchAccount(String accountName);
 
-        /**获取昵称*/
-        String getNickName(String jid);
-
-        /**获取联系人*/
-        Contact getContact(String jid);
+        /**获取名片信息*/
+        Contact getVCard(String jid);
 }

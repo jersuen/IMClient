@@ -19,6 +19,7 @@ import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.util.Base64;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.UserSearchManager;
@@ -215,18 +216,19 @@ public class XmppManager extends IXmppManager.Stub {
         return false;
     }
 
-    public boolean setVCard(byte[] avatarBytes, String nickName) {
+    /**设置名片信息*/
+    public boolean setVCard(Contact contact) throws RemoteException {
         VCard vCard = new VCard();
         try {
             // 加载自己的VCard
             vCard.load(connection);
             // 设置昵称
-            if (!TextUtils.isEmpty(nickName)) {
-                vCard.setNickName(nickName);
+            if (!TextUtils.isEmpty(contact.name)) {
+                vCard.setNickName(contact.name);
             }
             // 设置头像
-            if (avatarBytes != null) {
-                vCard.setAvatar(avatarBytes);
+            if (!TextUtils.isEmpty(contact.avatar)) {
+                vCard.setAvatar(Base64.decode(contact.avatar));
             }
             // 保存
             vCard.save(connection);
@@ -235,6 +237,28 @@ public class XmppManager extends IXmppManager.Stub {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**获取名片信息*/
+    public Contact getVCard(String jid) throws RemoteException {
+        if (!TextUtils.isEmpty(jid)) {
+            VCard vCard = new VCard();
+            try {
+                vCard.load(getConnection(), jid);
+                Contact contact = new Contact();
+                contact.account = jid;
+                contact.name = vCard.getNickName();
+                contact.avatar = Base64.encodeBytes(vCard.getAvatar());
+                return contact;
+            } catch (SmackException.NoResponseException e) {
+                e.printStackTrace();
+            } catch (XMPPException.XMPPErrorException e) {
+                e.printStackTrace();
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     /**搜索账户 XEP-0055*/
@@ -266,44 +290,6 @@ public class XmppManager extends IXmppManager.Stub {
             e.printStackTrace();
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getNickName(String jid) throws RemoteException {
-        if (!TextUtils.isEmpty(jid)) {
-            VCard vCard = new VCard();
-            try {
-                vCard.load(getConnection(), jid);
-                return vCard.getNickName();
-            } catch (SmackException.NoResponseException e) {
-                e.printStackTrace();
-            } catch (XMPPException.XMPPErrorException e) {
-                e.printStackTrace();
-            } catch (SmackException.NotConnectedException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    public Contact getContact(String jid) throws RemoteException {
-        if (!TextUtils.isEmpty(jid)) {
-            VCard vCard = new VCard();
-            try {
-                vCard.load(getConnection(), jid);
-                Contact contact = new Contact();
-                contact.account = jid;
-                contact.name = vCard.getNickName();
-                contact.avatar = vCard.getAvatar().toString();
-                return contact;
-            } catch (SmackException.NoResponseException e) {
-                e.printStackTrace();
-            } catch (XMPPException.XMPPErrorException e) {
-                e.printStackTrace();
-            } catch (SmackException.NotConnectedException e) {
-                e.printStackTrace();
-            }
         }
         return null;
     }

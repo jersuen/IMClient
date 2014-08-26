@@ -24,6 +24,7 @@ import org.jivesoftware.smack.util.StringUtils;
  * @author JerSuen
  */
 public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAdapter {
+    private View.OnClickListener clickListener;
     private static final int[] COLORS = new int[] { R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
     private List<Item> items;
 
@@ -117,6 +118,7 @@ public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAda
             holder = new ViewHolder();
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_contacts_list_item, null);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.fragment_contacts_list_item_avatar);
+            holder.avatar.setOnClickListener(clickListener);
             holder.name = (TextView) convertView.findViewById(R.id.fragment_contacts_list_item_name);
             holder.title = (TextView) convertView.findViewById(R.id.fragment_contacts_list_item_title);
             holder.layout = convertView.findViewById(R.id.fragment_contacts_list_item_layout);
@@ -136,6 +138,7 @@ public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAda
             holder.title.setVisibility(View.GONE);
             holder.name.setText(item.contact.name);
             holder.avatar.setImageDrawable(IM.getAvatar(StringUtils.parseName(item.contact.account)));
+            holder.avatar.setTag(item.contact.account);
         }
         return convertView;
     }
@@ -144,5 +147,13 @@ public class ContactsAdapter extends BaseAdapter implements PinnedSectionListAda
         TextView name,title;
         RoundedImageView avatar;
         View layout;
+    }
+
+    /**
+     * 适配器内容监听器
+     * @param clickListener
+     */
+    public void setOnItemViewClickListener(View.OnClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 }

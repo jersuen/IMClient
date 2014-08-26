@@ -38,7 +38,6 @@
             android:background="@android:color/white"
             >
         <LinearLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal"
@@ -48,7 +47,7 @@
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="账号"
-                    android:gravity="center"
+                    android:gravity="center|bottom"
                     android:textSize="20sp"
                     />
             <EditText
@@ -57,9 +56,14 @@
                     android:layout_weight="3"
                     android:layout_height="match_parent"
                     android:focusable="false"
+                    android:gravity="center|bottom"
+                    />
+            <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.3"
+                    android:layout_height="match_parent"
                     />
         </LinearLayout>
-
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -71,13 +75,20 @@
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="昵称"
-                    android:gravity="center"
+                    android:gravity="center|bottom"
                     android:textSize="20sp"
                     />
             <EditText
                     android:id="@+id/activity_user_nickname"
                     android:layout_width="0dp"
                     android:layout_weight="3"
+                    android:layout_height="match_parent"
+                    android:gravity="center|bottom"
+
+                    />
+            <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.3"
                     android:layout_height="match_parent"
                     />
         </LinearLayout>
@@ -94,7 +105,7 @@
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="备注"
-                    android:gravity="center"
+                    android:gravity="center|bottom"
                     android:textSize="20sp"
                     />
             <EditText
@@ -102,11 +113,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="3"
                     android:layout_height="match_parent"
+                    android:gravity="center|bottom"
+                    />
+            <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.3"
+                    android:layout_height="match_parent"
                     />
         </LinearLayout>
-
-
-
 
     </LinearLayout>
     <Button

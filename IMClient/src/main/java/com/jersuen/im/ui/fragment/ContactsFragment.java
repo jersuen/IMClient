@@ -14,6 +14,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.jersuen.im.R;
 import com.jersuen.im.provider.ContactsProvider;
 import com.jersuen.im.ui.ChatActivity;
+import com.jersuen.im.ui.UserActivity;
 import com.jersuen.im.ui.adapter.ContactsAdapter;
 import com.jersuen.im.ui.adapter.ContactsAdapter.Item;
 import com.jersuen.im.ui.view.PinnedSectionListView;
@@ -22,10 +23,9 @@ import com.jersuen.im.ui.view.PinnedSectionListView;
  * 联系人列表
  * @author JerSuen
  */
-public class ContactsFragment extends ListFragment implements OnItemClickListener {
+public class ContactsFragment extends ListFragment implements OnItemClickListener, View.OnClickListener {
     private ContactsAdapter adapter;
     private ContentObserver co;
-
     public ContactsFragment() {}
 
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,7 @@ public class ContactsFragment extends ListFragment implements OnItemClickListene
         co = new ContentObserver(new Handler()) {
             public void onChange(boolean selfChange) {
                 adapter = new ContactsAdapter();
+                adapter.setOnItemViewClickListener(ContactsFragment.this);
                 getListView().setAdapter(adapter);
             }
         };
@@ -49,6 +50,7 @@ public class ContactsFragment extends ListFragment implements OnItemClickListene
         super.onActivityCreated(savedInstanceState);
         // 适配器有内容
         adapter = new ContactsAdapter();
+        adapter.setOnItemViewClickListener(this);
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
     }
@@ -63,6 +65,14 @@ public class ContactsFragment extends ListFragment implements OnItemClickListene
         Item item = adapter.getItem(position);
         if (item.contact != null) {
             startActivity(new Intent(getActivity(),ChatActivity.class).putExtra(ChatActivity.EXTRA_CONTACT,item.contact));
+        }
+    }
+
+    public void onClick(View v) {
+        if (v.getTag() != null) {
+            if (v.getId() == R.id.fragment_contacts_list_item_avatar) {
+                startActivity(new Intent(getActivity(),UserActivity.class).putExtra(UserActivity.EXTRA_ID, v.getTag().toString()));
+            }
         }
     }
 }
