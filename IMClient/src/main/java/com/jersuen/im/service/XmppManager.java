@@ -25,7 +25,6 @@ import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.UserSearchManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
-import org.jivesoftware.smackx.xdata.FormField;
 
 import java.io.IOException;
 import java.util.*;
@@ -263,27 +262,24 @@ public class XmppManager extends IXmppManager.Stub {
 
     /**搜索账户 XEP-0055*/
     public String searchAccount(String accountName) throws RemoteException {
-
-        LogUtils.LOGD(XmppManager.class, "search：" + accountName);
         try {
-            UserSearchManager search = new UserSearchManager(getConnection());
-            Form searchForm = search.getSearchForm("search." + getConnection().getServiceName());
-            for (FormField field : searchForm.getFields()) {
-                LogUtils.LOGD(XmppManager.class, "Label：" + field.getLabel());
-                LogUtils.LOGD(XmppManager.class, "Description：" + field.getDescription());
-                LogUtils.LOGD(XmppManager.class, "Type：" + field.getType());
-                LogUtils.LOGD(XmppManager.class, "Variable：" + field.getVariable());
-            }
-            // 创建新表单
+            // 创建搜索
+            UserSearchManager searchManager = new UserSearchManager(getConnection());
+            // 获取搜索表单
+            Form searchForm = searchManager.getSearchForm("search." + getConnection().getServiceName());
+            // 提交表单
             Form answerForm = searchForm.createAnswerForm();
+            // 设置搜索内容
             answerForm.setAnswer("search", accountName);
+            // 设置搜索的列
             answerForm.setAnswer("Username", true);
-            ReportedData data = search.getSearchResults(answerForm, "search." + getConnection().getServiceName());
-            String jidStr = null;
+            // 提交搜索表单
+            ReportedData data = searchManager.getSearchResults(answerForm, "search." + getConnection().getServiceName());
+            // 遍历结果列
             for (ReportedData.Row row : data.getRows()) {
-                jidStr = row.getValues("jid").get(0);
+                // 获取jid
+                return row.getValues("jid").get(0);
             }
-            return jidStr;
         } catch (SmackException.NoResponseException e) {
             e.printStackTrace();
         } catch (XMPPException.XMPPErrorException e) {
