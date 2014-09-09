@@ -14,10 +14,7 @@ IMClient
 
 更改IM.java里的HOST为你的openfire地址<br>
 ```java
-
 public static final String HOST = "192.168.1.123";
-
-
 ```
 
 ##截图
