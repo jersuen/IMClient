@@ -3,20 +3,20 @@ IMClient
 
 基于XMPP协议的 Android 即时通讯客户端
 
+
 ### 即时通讯公开课 ###
     1.地址：http://pan.baidu.com/s/1qWnYNyG
     2.密码：h7yu
     3.交流群：324632947
 
-### 如何使用###
-    1.更改IM.java里面的HOST地址为你of的地址
 
 ## **如何使用** ##
 
-更改IM.java里的openfire地址<br>
+更改IM.java里的HOST为你的openfire地址<br>
 ```java
 
 public static final String HOST = "192.168.1.123";
+
 
 ```
 
