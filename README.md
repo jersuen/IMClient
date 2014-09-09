@@ -5,7 +5,7 @@ IMClient
 
 
 ### 即时通讯公开课 ###
-    1.地址：<http://pan.baidu.com/s/1qWnYNyG>
+    1.地址：http://pan.baidu.com/s/1qWnYNyG
     2.密码：h7yu
     3.交流群：324632947
 
