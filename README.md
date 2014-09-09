@@ -11,6 +11,14 @@ IMClient
 ### 如何使用###
     1.更改IM.java里面的HOST地址为你of的地址
 
+## **如何使用** ##
+
+更改IM.java里的openfire地址<br>
+```java
+
+public static final String HOST = "192.168.1.123";
+
+```
 
 ##截图
 ![Screenshot 0](https://raw.githubusercontent.com/jersuen/IMClient/master/Screenshots/00.png)
